@@ -5,8 +5,11 @@ PathMaterialsParameters  = "Input/020Materials parameters/" ;
 PathElectricalParameters = "Input/015Electrical parameters/";
 PathResultsUI            = "Output/"                        ;
 
-cm  = 1e-2     ;
-mu0 = 4*Pi*1e-7;
+cm   = 1e-2     ;
+mili = 1e-3     ;
+kilo = 1e3      ;
+mega = 1e6      ;
+mu0  = 4*Pi*1e-7;
 
 DefineConstant[
 	       Type = { 0 , Name StrCat[PathElectricalParameters,"Type A or B?"], Highlight "Red", Visible 1,
@@ -22,11 +25,43 @@ DefineConstant[
       1 = "Shell Type"
     } }];
 
+DefineConstant[
+        Test = { 0 , Name StrCat[PathElectricalParameters,"02Which are you willing to do?"], Highlight "Red", Visible 1,
+    Choices{
+      0 = "Short circuit",
+      1 = "Open Circuit",
+      2 = "Define your load"
+    } }];
+
+DefineConstant[
+        Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"02Which are you willing to do?"], Highlight "Red", Visible 1,
+    Choices{
+      0 = "Star",
+      1 = "Delta"
+    } }];
+
+DefineConstant[
+        Second_connection = { 0 , Name StrCat[PathElectricalParameters,"02Which are you willing to do?"], Highlight "Red", Visible 1,
+    Choices{
+      0 = "Star",
+      1 = "Delta"
+    } }];
+
+
+If (Type == 0) 
+  Voltage_primary  = 2.4*kilo                         ; //just defining everything in here :) It mat not be used later
+  Voltage_secondary= 240                              ;
+  Nominal_Power    = 200*kilo                         ;
+  transfo_ratio    = Voltage_primary/Voltage_secondary;//transformation ratio
+Else
+  Voltage_primary  = 60*kilo                          ; //just defining everything in here :) It mat not be used later
+  Voltage_secondary= 2.4*kilo                         ;
+  Nominal_Power    = 20*kilo                          ;
+  transfo_ratio    = Voltage_primary/Voltage_secondary;//transformation ratio
+EndIf
 
 //Flag for laminated core (& insulation?) should be added as well 
-//Flag for an airgap in the transformer should also be added. I'll take care of it if you want
-//leave the pro file for me too x) 
-
+//Flag for an airgap in the transformer should also be added. 
 
 //Mesh parameters:
 lc_Rectangle = DefineNumber[0.001      , Name StrCat[PathMeshParameters     ,"01Core & Windings   "],Highlight "LightBlue1"];
@@ -58,10 +93,12 @@ EndIf
 
 
 //Physical Tags:
-Air             = 500 ;
+Skin_airInf     = 400 ; 
+Air_ext         = 500 ;
 AirInf          = 600 ;
 Air_Window      = 700 ;
 Core            = 800 ;
+
 Primary_ph1_p   = 900 ;
 Primary_ph2_p   = 1000;
 Primary_ph3_p   = 1100;
