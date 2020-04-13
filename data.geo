@@ -11,13 +11,8 @@ kilo = 1e3      ;
 mega = 1e6      ;
 mu0  = 4*Pi*1e-7;
 
-DefineConstant[
-	       Type = { 0 , Name StrCat[PathElectricalParameters,"Type A or B?"], Highlight "Red", Visible 1,
-    Choices{
-      0 = " Type A ",
-      1 = " Type B "
-    } }];
 
+/************************************ Geometry definition ******************************************************/
 DefineConstant[
 	       Geo = { 0 , Name StrCat[PathGeometricParameters,"00Which Transfo Type ?"], Highlight "Green", Visible 1,
     Choices{
@@ -31,7 +26,9 @@ DefineConstant[
       0 = "No",
       1 = "Yes"
     } }];	
-	
+
+
+/************************************ Electrical definition ******************************************************/	
 DefineConstant[
         Test = { 0 , Name StrCat[PathElectricalParameters,"02Which are you willing to do?"], Highlight "Red", Visible 1,
     Choices{
@@ -40,6 +37,13 @@ DefineConstant[
       2 = "Define your load"
     } }];
 
+DefineConstant[
+	       Type = { 0 , Name StrCat[PathElectricalParameters,"Type A or B?"], Highlight "Red", Visible 1,
+    Choices{
+      0 = " Type A ",
+      1 = " Type B "
+    } }];
+	
 DefineConstant[
         Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"03Which are you willing to do?"], Highlight "Red", Visible 1,
     Choices{
@@ -70,11 +74,13 @@ EndIf
 //Flag for laminated core (& insulation?) should be added as well 
 //Flag for an airgap in the transformer should also be added. 
 
-//Mesh parameters:
-lc_Rectangle = DefineNumber[0.001      , Name StrCat[PathMeshParameters     ,"01Core & Windings   "],Highlight "LightBlue1"];
-lc_Circle    = DefineNumber[0.01       , Name StrCat[PathMeshParameters     ,"02Airbox            "],Highlight "LightBlue1"];
+/************************************ Mesh parameters ******************************************************/
+lc_Holes = DefineNumber[0.001      , Name StrCat[PathMeshParameters     ,"01Internal corners of the core    "],Highlight "LightBlue1"];
+lc_Core_Corner    = DefineNumber[0.001       , Name StrCat[PathMeshParameters     ,"02External corners of the core "],Highlight "LightBlue1"];
+lc_Windings    = DefineNumber[0.001       , Name StrCat[PathMeshParameters     ,"02Windings "],Highlight "LightBlue1"];
+lc_Air    = DefineNumber[0.01       , Name StrCat[PathMeshParameters     ,"02Away from the transformer "],Highlight "LightBlue1"];
 
-//Geometric parameters:
+/************************************ Geometrical parameters ******************************************************/
 W_Inductor1  = DefineNumber[0.0025     , Name StrCat[PathGeometricParameters,"01Width Inductor 1  "], Highlight "Grey"];
 W_Inductor2  = DefineNumber[0.0025     , Name StrCat[PathGeometricParameters,"02Width Inductor 2  "], Highlight "Grey"];
 H_Leg        = DefineNumber[0.01       , Name StrCat[PathGeometricParameters,"04Height of the leg "], Highlight "Grey"];
@@ -85,24 +91,21 @@ Air_Gap2     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters,"08
 H_Hole       = DefineNumber[0.02       , Name StrCat[PathGeometricParameters,"03Height of the hole"], Highlight "Grey"];
 H_Inductor1  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters,"09Height Inductor 1 "], Highlight "Grey"];
 H_Inductor2  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters,"11Height Inductor 2 "], Highlight "Grey"];
-W_Centre       = DefineNumber[0.02     , Name StrCat[PathGeometricParameters,"12Width of the central part of the core "], Highlight "Grey", Visible Geo];
-H_Centre       = DefineNumber[0.01     , Name StrCat[PathGeometricParameters,"13Height of the central part of the core "], Highlight "Grey", Visible Geo];
-Air_Gap3      = DefineNumber[0.001       , Name StrCat[PathGeometricParameters,"14Air gap in the core"], Highlight "Grey", Visible Core_Air_Gap];
+W_Centre     = DefineNumber[0.02       , Name StrCat[PathGeometricParameters,"12Width of the central part of the core "], Highlight "Grey", Visible Geo];
+H_Centre     = DefineNumber[0.01       , Name StrCat[PathGeometricParameters,"13Height of the central part of the core "], Highlight "Grey", Visible Geo];
+Air_Gap3     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters,"14Air gap in the core"], Highlight "Grey", Visible Core_Air_Gap];
 
 Num_Surf = 1   ;
 
-If (Geo == 1)
-	
-	R_in  = Sqrt(((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre))^2)*1.5;
-	R_out = Sqrt(((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre))^2)*3;
+If (Geo == 1)	
+	R_in  = Sqrt(((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2)*1.5;		// Radius of the internal domain circle. 
+	R_out = Sqrt(((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2)*3;			// Radius of the external domain circle. 
 Else
-	R_in  = Sqrt(((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 ))^2)*1.5;
-	R_out = Sqrt(((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 ))^2)*3;
+	R_in  = Sqrt(((W_Leg*1.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 +(Air_Gap3*Core_Air_Gap)*0.5))^2)*1.5;								// Radius of the internal domain circle. 
+	R_out = Sqrt(((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 + (Air_Gap3*Core_Air_Gap)*0.5))^2)*3;						// Radius of the external domain circle. 
 EndIf
 
-
-
-//Physical Tags:
+/************************************ Physical Tags ******************************************************/
 Skin_airInf     = 400 ; 
 Air_ext         = 500 ;
 AirInf          = 600 ;
