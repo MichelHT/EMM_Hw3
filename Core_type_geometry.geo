@@ -64,9 +64,27 @@ R_Circle = R_in;
 Num_Surf = Num_Surf +1;
 Call Create_Circle;
 
-BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Delete; }		   // CORE
+If(Core_Air_Gap == 0)	
+	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; }; // CORE
+Else
+	X_Rectangle = -(W_Leg + W_Hole + W_Leg*0.5);
+	W_Rectangle = (W_Leg + W_Hole + W_Leg*0.5)*2;
+	Y_Rectangle =  H_Hole*0.5;
+	H_Rectangle = H_Leg;
+	Num_Surf = Num_Surf +1;
+	Call Create_Rectangle;	
+	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Surface{Num_Surf}; Delete;}; // CORE
+	
+	X_Rectangle = -(W_Leg + W_Hole + W_Leg*0.5);
+	W_Rectangle = (W_Leg + W_Hole + W_Leg*0.5)*2;
+	Y_Rectangle =  H_Hole*0.5 + Air_Gap3;
+	H_Rectangle = H_Leg;
+	Num_Surf = Num_Surf +1;
+	Call Create_Rectangle;
+	Surf_Core() += Num_Surf;	// CORE
+EndIf
 BooleanDifference{ Surface{16}; Delete; }{ Surface{17}; }				  // AIR INF
-s() = BooleanDifference{ Surface{17}; Delete; }{ Surface{1}; Surface{Surf_Inductors()}; };// AIR
+s() = BooleanDifference{ Surface{17}; Delete; }{ Surface{Surf_Core()}; Surface{Surf_Inductors()}; };// AIR
 
 
 

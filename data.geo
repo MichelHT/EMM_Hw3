@@ -19,12 +19,19 @@ DefineConstant[
     } }];
 
 DefineConstant[
-	       Geo = { 0 , Name StrCat[PathGeometricParameters,"01Which Transfo Type ?"], Highlight "Green", Visible 1,
+	       Geo = { 0 , Name StrCat[PathGeometricParameters,"00Which Transfo Type ?"], Highlight "Green", Visible 1,
     Choices{
       0 = "Core Type",
       1 = "Shell Type"
     } }];
 
+DefineConstant[
+	       Core_Air_Gap = { 0 , Name StrCat[PathGeometricParameters,"01Air gap in the core?"], Highlight "Green", Visible 1,
+    Choices{
+      0 = "No",
+      1 = "Yes"
+    } }];	
+	
 DefineConstant[
         Test = { 0 , Name StrCat[PathElectricalParameters,"02Which are you willing to do?"], Highlight "Red", Visible 1,
     Choices{
@@ -34,14 +41,14 @@ DefineConstant[
     } }];
 
 DefineConstant[
-        Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"02Which are you willing to do?"], Highlight "Red", Visible 1,
+        Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"03Which are you willing to do?"], Highlight "Red", Visible 1,
     Choices{
       0 = "Star",
       1 = "Delta"
     } }];
 
 DefineConstant[
-        Second_connection = { 0 , Name StrCat[PathElectricalParameters,"02Which are you willing to do?"], Highlight "Red", Visible 1,
+        Second_connection = { 0 , Name StrCat[PathElectricalParameters,"04Which are you willing to do?"], Highlight "Red", Visible 1,
     Choices{
       0 = "Star",
       1 = "Delta"
@@ -78,18 +85,21 @@ Air_Gap2     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters,"08
 H_Hole       = DefineNumber[0.02       , Name StrCat[PathGeometricParameters,"03Height of the hole"], Highlight "Grey"];
 H_Inductor1  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters,"09Height Inductor 1 "], Highlight "Grey"];
 H_Inductor2  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters,"11Height Inductor 2 "], Highlight "Grey"];
+W_Centre       = DefineNumber[0.02     , Name StrCat[PathGeometricParameters,"12Width of the central part of the core "], Highlight "Grey", Visible Geo];
+H_Centre       = DefineNumber[0.01     , Name StrCat[PathGeometricParameters,"13Height of the central part of the core "], Highlight "Grey", Visible Geo];
+Air_Gap3      = DefineNumber[0.001       , Name StrCat[PathGeometricParameters,"14Air gap in the core"], Highlight "Grey", Visible Core_Air_Gap];
 
-W_Centre = 0.02;
-H_Centre = 0.01;
 Num_Surf = 1   ;
 
 If (Geo == 1)
+	
 	R_in  = Sqrt(((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre))^2)*1.5;
 	R_out = Sqrt(((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre))^2)*3;
 Else
 	R_in  = Sqrt(((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 ))^2)*1.5;
 	R_out = Sqrt(((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 ))^2)*3;
 EndIf
+
 
 
 //Physical Tags:
