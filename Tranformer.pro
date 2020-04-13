@@ -1,24 +1,30 @@
-Include "date.geo";
+Include "data.geo";
 
 mur_Core = DefineNumber[1000, Name StrCat[PathMaterialsParameters , "Relative permeability of the core"], Highlight "Yellow"];
 Freq     = DefineNumber[50  , Name StrCat[PathElectricalParameters, "Operating frequency              "], Highlight "Red"];
 
 Group {
-  Air         = Region[{Air_Window, Air}];
+  Air         = Region[{Air_ext}]        ;
   Sur_Air_Ext = Region[{Skin_airInf}]    ; // exterior boundary
   Core        = Region[{Core}]           ; // magnetic core of the transformer, assumed non-conducting
   Vol_Inf_Mag = Region[{AirInf}]         ; //We are applying the infinite shell transformation for accuracy
 
   For i In {1:3}
-  	Primary_p_phase~{i}   = Region[{Primary_ph1_p + (i - 1) * 100}    ];
-  	Primary_m_phase~{i}   = Region[{Primary_ph1_p + (i - 1 + 3) * 100}];
-   	Secondary_p_phase~{i} = Region[{Primary_ph1_p + (i - 1 + 6) * 100}];
-  	Secondary_m_phase~{i} = Region[{Primary_ph1_p + (i - 1 + 9) * 100}];
-  EndFor 
+    a = Primary_ph1_p + (i - 1) * 100    ; 
+    b = Primary_ph1_p + (i - 1 + 3) * 100;
+    c = Primary_ph1_p + (i - 1 + 6) * 100;
+    d = Primary_ph1_p + (i - 1 + 9) * 100;
 
-  For i In {0:11}
-  	Coils += Region[{Primary_ph1_p + i * 100}]; 
-  EndFor
+  	Primary_p_phase~{i}   = Region[{a}];
+  	Primary_m_phase~{i}   = Region[{b}];
+   	Secondary_p_phase~{i} = Region[{c}];
+  	Secondary_m_phase~{i} = Region[{d}];
+
+    Primary_coils        += Region[{Primary_p_phase~{i}  ,Primary_m_phase~{i}}  ];
+    Secondary_coils      += Region[{Secondary_p_phase~{i},Secondary_m_phase~{i}}];
+  	
+    Coils  += Region[{Primary_p_phase~{i},Primary_m_phase~{i},Secondary_p_phase~{i},Secondary_m_phase~{i}}]; 
+  EndFor 
 
   // Abstract regions 
   Vol_Mag   = Region[{Air, Core, Coils}]; // full magnetic domain (surfaces)
@@ -27,41 +33,45 @@ Group {
 
 Function{
 //Permeability
-  mu[Air, Coils] = 1 * mu0       ;
-  mu[Core]       = mur_Core * mu0;
-  nu[]           = 1 / mu[]      ;
+  mu[Air]    = 1 * mu0       ;
+  mu[Coils]  = 1 * mu0       ;
+  mu[Core]   = mur_Core * mu0;
+  nu[]       = 1 / mu[]      ;
 
 //Conductivity
-   sigma[Coils]  = 1e7           ;
+   sigma[Coils]  = 1e7       ;
 
 //Signs:
    For i In {1:3}
-     SignBranch[Primary_p_phase~{i},Secondary_p_phase~{i}] =  1;
-     SignBranch[Primary_m_phase~{i},Secondary_m_phase~{i}] = -1;
+     SignBranch[Primary_p_phase~{i}]   =  1;
+     SignBranch[Secondary_p_phase~{i}] =  1;
+     SignBranch[Primary_m_phase~{i}]   = -1;
+     SignBranch[Secondary_m_phase~{i}] = -1;
    EndFor
+
+Ns[Primary_coils]   = Primary_turns              ;
+Ns[Secondary_coils] = Primary_turns/transfo_ratio;
 
 //Constants for the infinite shell transformation:
 	Val_Rint = R_in ;
 	Val_Rext = R_out;
 
-//Defining the current density:
-		
+//Defining the current density: 
    For i In {1:3}
-   	Ns[] = 100; //2b modified selon Type A or B. I'll get back to it later
-   	Ns[] = 200; //2b modified selon Type A or B. I'll get back to it later
-	Sc[Primary_p_phase~{i}]   = SurfaceArea[];
+	  Sc[Primary_p_phase~{i}]   = SurfaceArea[];
     Sc[Primary_m_phase~{i}]   = SurfaceArea[];
     Sc[Secondary_p_phase~{i}] = SurfaceArea[];
     Sc[Secondary_m_phase~{i}] = SurfaceArea[];
    EndFor
 
-   js0[Coils] = Ns[] / Sc[] * Vector[0, 0, SignBranch[]];
+   js0[] = Ns[] / Sc[] * Vector[0, 0, SignBranch[]];
+
+  thickness_Core = 1;
 
 //2b added to the definition of the voltage:
-	CoefGeos[Coils] = SignBranch[] * thickness_Core; //thickness_Core to be defined
+	CoefGeos[Coils] = SignBranch[] * thickness_Core; 
 }
 
-//Connecting the + and - of the coils in series fofre primary and secondary 
 Flag_CircuitCoupling = 1;
 
 Group {
@@ -71,30 +81,47 @@ Group {
   SourceV_Cir     = Region[{}]; // voltage sources
   SourceI_Cir     = Region[{}]; // current sources
 
-  // Primary side
-  E_in = Region[10001];  //Voltage sourc
-  SourceV_Cir += Region[{E_in}];
-  R_in = Region[10002]; // Resistance in series with the voltage source
-  Resistance_Cir += Region[{R_in}];
+  For i In {1:3}
+      //Primary oltages
+      xx = 10001 + (i-1) * 100  ;
+      yy = 10001 + i * 5  * 100 ;
+      zz = 10001 + i * 100 * 100;
 
-  // Secondary side
-  R_out = Region[10101]; //The load resistance
-  Resistance_Cir += Region[{R_out}];
+      Voltage_pr~{i}  = Region[{xx}]            ;  //Primary voltage source
+      SourceV_Cir    += Region[{Voltage_pr~{i}}];
+
+      //Input resistances
+      R_in~{i}        = Region[{yy}]      ; // Resistance in series with the voltage source
+      Resistance_Cir += Region[{R_in~{i}}];
+
+      //Output resistances
+      R_out~{i}       = Region[{zz}]       ; //The load resistance
+      Resistance_Cir += Region[{R_out~{i}}];
+   EndFor
 }
 
 Function { 
-  deg              = Pi/180         ;
-  phase_E_in       = 90 *deg        ;
-  val_E_in         = Voltage_primary;
-  Resistance[R_in] = 1e-3           ; //Inputs series resistance
+  deg = Pi/180  ;
 
-  If (Test == 0)
-  	Resistance[R_out] = 750*mili;
-  ElseIf (Test == 1)
- 	Resistance[R_out] = 1e7;
-  Else 
-    Resistance[R_out] = DefineNumber[1*kilo, Name StrCat[PathElectricalParameters,"02Resistance of the load"], Highlight "Red"];
-  EndIf
+  For i In {1:3}
+    //Input Voltages:
+    V_pr~{i}    = Voltage_primary  ;
+    V_sc~{i}    = Voltage_secondary;
+    phase_V~{i} = 120 * (i-1) * deg;
+
+    //Input resistances
+    Resistance[R_in~{i}] = 1e-3 ; //Inputs series resistance
+
+    //Load resistances
+    If (test == 0)
+    	Resistance[R_out~{i}] = 750*mili   ; //Short circuit
+    ElseIf (test == 1)
+   	  Resistance[R_out~{i}] = 1e7        ; //Open circuit  
+    Else 
+      Resistance[R_out~{i}] = Load_resist; //Defined load
+    EndIf
+
+  EndFor
 }
 
 Constraint {
@@ -118,33 +145,85 @@ Constraint {
   //Instead of fixing the constraints we will force the circuit quantities to have a given value (/function)
   { Name Voltage_Cir ;
     Case {
-      { Region E_in; Value val_E_in;
-        TimeFunction F_Cos_wt_p[]{2*Pi*Freq, phase_E_in}; }
-    }
-
+      For i In {1:3}
+        { Region Voltage_pr~{i}; Value V_pr~{i};
+          TimeFunction F_Cos_wt_p[]{2*Pi*Freq, phase_V~{i}}; }
+      EndFor
+    } 
   }
 
-  //J'attend ta réponse pour finir cette partie
-//	{ Name ElectricalCircuit ; Type Network ;
-//    Case Circuit_1 { //the circuit for the primary
-//      { Region E_in; Branch {1,2}; }
-//      { Region R_in; Branch {2,3}; }
+	{ Name ElectricalCircuit ; Type Network ;
 
-//      { Region Coil_1_P; Branch {2,3} ; }
-//      { Region Coil_1_M; Branch {3,1} ; }
-//    }
-//    Case Circuit_2 { //the circuit for the secondary
-//      { Region R_out; Branch {1,2}; }
+    Case Circuit_1 { //Star coupling for the primary
+      If(Prim_connection == 0)
+        For i In {1:3}
 
-//      { Region Coil_2_P; Branch {2,3} ; }
-//      { Region Coil_2_M; Branch {3,1} ; }
-//    }
-//  }
-//}
+          aa = 2+(i-1);
+          bb = 5+(i-1);
+          cc = 8+(i-1);
+          
+          {Region Voltage_pr~{i}     ; Branch {1 , aa} ; }
+          {Region R_in~{i}           ; Branch {aa, bb} ; }
+          {Region Primary_p_phase~{i}; Branch {bb, cc} ; }
+          {Region Primary_m_phase~{i}; Branch {cc, 11} ; }
+        EndFor
+      Else //Primary Delta
+        For i In {1:3}
 
+          aa = 2+(i-1); 
+          bb = 5+(i-1); 
+
+          {Region Voltage_pr~{i}     ; Branch {1 , aa} ; }
+          {Region R_in~{i}           ; Branch {aa, bb} ; }
+        EndFor
+          {Region Primary_p_phase~{1}; Branch {5 , 8} ; }
+          {Region Primary_m_phase~{1}; Branch {8 , 6} ; }
+          {Region Primary_p_phase~{2}; Branch {5 , 9} ; }
+          {Region Primary_m_phase~{2}; Branch {9 , 7} ; }
+          {Region Primary_p_phase~{3}; Branch {6 , 10}; }
+          {Region Primary_m_phase~{3}; Branch {10, 7} ; }
+        EndIf
+
+}  
+
+    Case Circuit_2 { 
+      If(Second_connection == 0)  //Star coupling for the secondary
+        For i In {1:3}
+
+          aa = 2+(i-1); 
+          bb = 5+(i-1); 
+
+          {Region Secondary_p_phase~{i}; Branch {1 , aa} ; }
+          {Region Secondary_m_phase~{i}; Branch {aa, bb} ; }
+          {Region R_out~{i}            ; Branch {bb, 8 } ; }
+
+        EndFor
+
+      Else  //Delta coupling for the secondary
+
+        For i In {1:3}
+          {Region R_out~{i}            ; Branch {1 , 2+(i-1)} ; }
+        EndFor   
+          {Region Secondary_p_phase~{1}; Branch {2 , 6}  ; }
+          {Region Secondary_m_phase~{1}; Branch {6 , 3}  ; }
+          {Region Secondary_p_phase~{2}; Branch {2 , 8}  ; }
+          {Region Secondary_m_phase~{2}; Branch {8 , 4}  ; }
+          {Region Secondary_p_phase~{3}; Branch {4 , 10} ; }
+          {Region Secondary_m_phase~{3}; Branch {10, 3}  ; }
+      EndIf
+    }
+  }
+}
 
 Include "../Libraries/Lib_Magnetodynamics2D_av_Cir.pro";
 
 PostOperation {
-//We need to talk x) 
+{ Name Map_a; NameOfPostProcessing Magnetodynamics2D_av;
+    Operation {
+      Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+      Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
+      Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Resultsaz.pos" ];
+     //2b filled after discussion
+    }
+  }
 }
