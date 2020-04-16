@@ -1,4 +1,4 @@
-
+// This function creates a rectangle of width W_Rectangle and of height H_Rectangle. The mesh size at the corner of the created rectangle is fixed to lc_Rectangle.
 Macro Create_Rectangle
 	cp = newp ;
 	Point(cp)       = {X_Rectangle, Y_Rectangle, 0, lc_Rectangle};

@@ -4,10 +4,11 @@ mur_Core = DefineNumber[1000, Name StrCat[PathMaterialsParameters , "Relative pe
 Freq     = DefineNumber[50  , Name StrCat[PathElectricalParameters, "Operating frequency              "], Highlight "Red"];
 
 Group {
+	// Physical regions
   Air         = Region[{Air_ext}]        ;
+  Air_Inf	  = Region[{AirInf}]         ;
   Sur_Air_Ext = Region[{Skin_airInf}]    ; // exterior boundary
   Core        = Region[{Core}]           ; // magnetic core of the transformer, assumed non-conducting
-  Vol_Inf_Mag = Region[{AirInf}]         ; //We are applying the infinite shell transformation for accuracy
 
   For i In {1:3}
     a = Primary_ph1_p + (i - 1) * 100    ; 
@@ -27,13 +28,16 @@ Group {
   EndFor 
 
   // Abstract regions 
-  Vol_Mag   = Region[{Air, Core, Coils}]; // full magnetic domain (surfaces)
+  Vol_Mag   = Region[{Air, Core, Coils, Air_Inf}]; // full magnetic domain (surfaces)
   Vol_S_Mag = Region[{Coils}]           ; // Stranded conductors only. 
+  Vol_Inf_Mag = Region[{Air_Inf}]         ; //We are applying the infinite shell transformation for accuracy
+  Val_Rint = R_int ;  Val_Rext = R_ext    ; // Interior and exterior radii of ring
 }
 
 Function{
 //Permeability
   mu[Air]    = 1 * mu0       ;
+  mu[Air_Inf]    = 1 * mu0       ;
   mu[Coils]  = 1 * mu0       ;
   mu[Core]   = mur_Core * mu0;
   nu[]       = 1 / mu[]      ;
@@ -52,9 +56,6 @@ Function{
 Ns[Primary_coils]   = Primary_turns              ;
 Ns[Secondary_coils] = Primary_turns/transfo_ratio;
 
-//Constants for the infinite shell transformation:
-	Val_Rint = R_in ;
-	Val_Rext = R_out;
 
 //Defining the current density: 
    For i In {1:3}
@@ -178,10 +179,10 @@ Constraint {
         EndFor
           {Region Primary_p_phase~{1}; Branch {5 , 8} ; }
           {Region Primary_m_phase~{1}; Branch {8 , 6} ; }
-          {Region Primary_p_phase~{2}; Branch {5 , 9} ; }
+          {Region Primary_p_phase~{2}; Branch {6 , 9} ; }
           {Region Primary_m_phase~{2}; Branch {9 , 7} ; }
-          {Region Primary_p_phase~{3}; Branch {6 , 10}; }
-          {Region Primary_m_phase~{3}; Branch {10, 7} ; }
+          {Region Primary_p_phase~{3}; Branch {7 , 10}; }
+          {Region Primary_m_phase~{3}; Branch {10, 5} ; }
         EndIf
 
 }  
@@ -206,10 +207,10 @@ Constraint {
         EndFor   
           {Region Secondary_p_phase~{1}; Branch {2 , 6}  ; }
           {Region Secondary_m_phase~{1}; Branch {6 , 3}  ; }
-          {Region Secondary_p_phase~{2}; Branch {2 , 8}  ; }
+          {Region Secondary_p_phase~{2}; Branch {3 , 8}  ; }
           {Region Secondary_m_phase~{2}; Branch {8 , 4}  ; }
           {Region Secondary_p_phase~{3}; Branch {4 , 10} ; }
-          {Region Secondary_m_phase~{3}; Branch {10, 3}  ; }
+          {Region Secondary_m_phase~{3}; Branch {10, 2}  ; }
       EndIf
     }
   }
@@ -222,7 +223,7 @@ PostOperation {
     Operation {
       Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
       Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
-      Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+      Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Resultsaz.pos" ];
      //2b filled after discussion
     }
   }

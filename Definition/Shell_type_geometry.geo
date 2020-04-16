@@ -75,7 +75,7 @@ EndFor
 // External domain circle.
 X_Circle = 0;
 Y_Circle = 0;
-R_Circle = R_out;
+R_Circle = R_ext;
 Num_Surf = Num_Surf +1;
 lc_Circle = lc_Air;
 Call Create_Circle;
@@ -83,7 +83,7 @@ Call Create_Circle;
 // Internal domain circle. 
 X_Circle = 0;
 Y_Circle = 0;
-R_Circle = R_in;
+R_Circle = R_int;
 Num_Surf = Num_Surf +1;
 Call Create_Circle;
 
