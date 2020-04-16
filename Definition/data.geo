@@ -27,6 +27,13 @@ DefineConstant[
       0 = "No",
       1 = "Yes"
     } }];
+	
+DefineConstant[
+	       Laminated_Core = { 1 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
+    Choices{
+      0 = "No",
+      1 = "Yes"
+    } }];
     
 /************************************ Electrical definition ******************************************************/	
 DefineConstant[
