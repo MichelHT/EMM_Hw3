@@ -223,7 +223,7 @@ PostOperation {
     Operation {
       Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
       Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
-      Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Resultsaz.pos" ];
+      Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
      //2b filled after discussion
     }
   }
