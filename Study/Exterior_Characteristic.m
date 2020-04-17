@@ -56,6 +56,7 @@ set(gca,'fontsize',20,'fontname','Times','LineWidth',0.5);
 
 
 %% Fresnel diagram open circuit
+
 Figure2=figure(2);clf;set(Figure2,'defaulttextinterpreter','latex');
 col = {'r' 'b' 'k'}
 hold on;
