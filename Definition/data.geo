@@ -101,7 +101,7 @@ H_Hole       = DefineNumber[0.02       , Name StrCat[PathGeometricParameters ,"1
 H_Inductor1  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters ,"11Height Inductor 1 "      ], Highlight "Grey"];
 H_Inductor2  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters ,"12Height Inductor 2 "      ], Highlight "Grey"];
 Primary_turns= DefineNumber[20         , Name StrCat[PathElectricalParameters,"05Number of primary turns"], Highlight "Red" ];
-Load_resist  = DefineNumber[1*kilo     , Name StrCat[PathElectricalParameters,"02Resistance of the load"  ], Highlight "Red" , Visible test==2     ];
+Load_exponent= DefineNumber[-3     , Name StrCat[PathElectricalParameters,"02Order of magnitude of the load expressed in Ohm"  ], Highlight "Red" , Visible test==2     ];
 Air_Gap3     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters ,"13Air gap in the core"     ], Highlight "Grey", Visible Core_Air_Gap];
 W_Centre     = DefineNumber[0.02       , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "], Highlight "Grey", Visible Geo];
 H_Centre     = DefineNumber[0.01       , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"], Highlight "Grey", Visible Geo];

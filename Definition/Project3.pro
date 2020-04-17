@@ -43,6 +43,7 @@ Function{
   mu[Air_Inf]    = 1 * mu0      ;
   mu[Coils]  = 1 * mu0       	;
   mu[Core]   = mur_Core * mu0	;
+  // mu[Core]   = 1 * mu0	;
   nu[]       = 1 / mu[]      	;
 
 //Conductivity
@@ -63,10 +64,10 @@ Ns[Secondary_coils] = Primary_turns/transfo_ratio;
 
 //Defining the current density: 
    For i In {1:3}
-	  Sc[Primary_p_phase~{i}]   = SurfaceArea[];
-    Sc[Primary_m_phase~{i}]   = SurfaceArea[];
-    Sc[Secondary_p_phase~{i}] = SurfaceArea[];
-    Sc[Secondary_m_phase~{i}] = SurfaceArea[];
+		Sc[Primary_p_phase~{i}]   = SurfaceArea[];
+		Sc[Primary_m_phase~{i}]   = SurfaceArea[];
+		Sc[Secondary_p_phase~{i}] = SurfaceArea[];
+		Sc[Secondary_m_phase~{i}] = SurfaceArea[];
    EndFor
 
    js0[Coils] = Ns[] / Sc[] * Vector[0, 0, SignBranch[]];
@@ -88,7 +89,7 @@ Group {
   SourceI_Cir     = Region[{}]; // current sources
 
   For i In {1:3}
-      //Primary oltages
+      //Primary voltages
       xx = 10001 + (i-1) * 100  ;
       yy = 10001 + i * 5  * 100 ;
       zz = 10001 + i * 100 * 100;
@@ -112,7 +113,6 @@ Function {
   For i In {1:3}
     //Input Voltages:
     V_pr~{i}    = Voltage_primary  ;
-    V_sc~{i}    = Voltage_secondary;
     phase_V~{i} = 120 * (i-1) * deg;
 
     //Input resistances
@@ -124,7 +124,7 @@ Function {
     ElseIf (test == 1)
    	  Resistance[R_out~{i}] = 1e7        ; //Open circuit  
     Else 
-      Resistance[R_out~{i}] = Load_resist; //Defined load
+      Resistance[R_out~{i}] = 10^Load_exponent; //Defined load
     EndIf
 
   EndFor
@@ -174,7 +174,7 @@ Constraint {
           {Region Voltage_pr~{i}     ; Branch {1 , aa} ; }
           {Region R_in~{i}           ; Branch {aa, bb} ; }
           {Region Primary_p_phase~{i}; Branch {bb, cc} ; }
-          {Region Primary_m_phase~{i}; Branch {cc, 11} ; }
+          {Region Primary_m_phase~{i}; Branch {cc, 1} ; }
         EndFor
       Else //Primary Delta
         For i In {1:3}
@@ -204,7 +204,7 @@ Constraint {
 
           {Region Secondary_p_phase~{i}; Branch {1 , aa} ; }
           {Region Secondary_m_phase~{i}; Branch {aa, bb} ; }
-          {Region R_out~{i}            ; Branch {bb, 8 } ; }
+          {Region R_out~{i}            ; Branch {bb, 1 } ; }
 
         EndFor
 
@@ -229,9 +229,19 @@ Include "../Libraries/Lib_Magnetodynamics2D_av_Cir.pro";
 PostOperation {
 { Name Map_a; NameOfPostProcessing Magnetodynamics2D_av;
     Operation {
-      Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
-      Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
-      Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+      // Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+      // Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
+      // Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+	  
+	  
+	  // Exterior characteristic files 
+	  Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/U2_ph1.txt" ];
+	  Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/I2_ph1.txt" ];
+	  Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/U2_ph2.txt" ];
+	  Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/I2_ph2.txt" ];
+	  Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/U2_ph3.txt" ];
+	  Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/I2_ph3.txt" ];
+	  
      //2b filled after discussion
     }
   }
