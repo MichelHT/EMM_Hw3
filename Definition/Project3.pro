@@ -228,6 +228,7 @@ Constraint {
 
           aa = 2+(i-1); 
           bb = 5+(i-1); 
+		  cc = 9+(i-1);
 
           {Region Secondary_p_phase~{i}; Branch {1 , aa} ; }
           {Region Secondary_m_phase~{i}; Branch {aa, bb} ; }
@@ -241,8 +242,8 @@ Constraint {
 			  ElseIf(Phase == -90)
 					{Region C_out~{i}            ; Branch {bb, 1 } ; }
 			  ElseIf(Phase > 0)
-					{Region R_out~{i}            ; Branch {bb, 5000 } ; }
-					{Region L_out~{i}            ; Branch {5000, 1 } ; }
+					{Region R_out~{i}            ; Branch {bb, cc } ; }
+					{Region L_out~{i}            ; Branch {cc, 1 } ; }
 			  ElseIf(Phase < 0)
 					{Region R_out~{i}            ; Branch {bb, 1 } ; }
 					{Region C_out~{i}            ; Branch {bb, 1 } ; }
@@ -262,8 +263,8 @@ Constraint {
 			  ElseIf(Phase == -90)
 					{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }
 			  ElseIf(Phase > 0)
-					{Region R_out~{i}            ; Branch {1, 5000 } ; }
-					{Region L_out~{i}            ; Branch {5000, 2+(i-1) } ; }
+					{Region R_out~{i}            ; Branch {1, 5+(i-1) } ; }
+					{Region L_out~{i}            ; Branch {5+(i-1), 2+(i-1) } ; }
 			  ElseIf(Phase < 0)
 					{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
 					{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }

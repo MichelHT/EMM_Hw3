@@ -128,23 +128,28 @@ legend('Phase 1', 'Phase 2', 'Phase 3');
 set(gca,'fontsize',20,'fontname','Times','LineWidth',0.5);
 
 
-%% Fresnel diagram open circuit
+%% Fresnel diagram (to verify the phase of the load)
+% Whatever the value of Load, the phase should remain the same.
+Load = 30; % Load = 1 ==> Almost Shortt circuit ; Load = length(V2{i}(:,2))  ==> Almost open circuit ; Smtg else: between the 2
+
 
 Figure2=figure(2);clf;set(Figure2,'defaulttextinterpreter','latex');
 col = {'r' 'b' 'k'};
 hold on;
 grid;
 axis('equal')
+
+% Voltage vector
 for(i=1:3)    
-    Vec_V2_Vide{i} = [V2{i}(1,2) V2{i}(1,3)];
+    Vec_V2_Vide{i} = [V2{i}(Load,2) V2{i}(Load,3)];
     line([0 Vec_V2_Vide{i}(1)] , [0 Vec_V2_Vide{i}(2)],'linewidth',3,'color',col{i});
 end
 
+% Current vector
 for(i=1:3)
-    Vec_I2_Vide{i} = [-I2{i}(1,2) -I2{i}(1,3)];
+    Vec_I2_Vide{i} = [-I2{i}(Load,2) -I2{i}(Load,3)];
     line([0 Vec_I2_Vide{i}(1)] , [0 Vec_I2_Vide{i}(2)],'linewidth',3,'color',col{i});
 end
-
 legend('Phase 1', 'Phase 2', 'Phase 3');
 set(gca,'fontsize',20,'fontname','Times','LineWidth',0.5);
 
