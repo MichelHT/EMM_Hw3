@@ -13,7 +13,7 @@ close all;
 %% Importation of the data and computation of the norm of the secondary current and voltage
 
 cd(Directory);
-if((Phase ~= 90) & (Phase ~= 90))
+if((Phase ~= 90) & (Phase ~= -90))
     Files_Current = {'I2_Rout_ph1.txt', 'I2_Rout_ph2.txt', 'I2_Rout_ph3.txt'};
     Files_Voltage = {'U2_Rout_ph1.txt', 'U2_Rout_ph2.txt', 'U2_Rout_ph3.txt'};
 end
