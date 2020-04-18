@@ -44,7 +44,6 @@ Function{
 	mu[Air_Inf]    = 1 * mu0      ;
 	mu[Coils]  = 1 * mu0       	;
 	mu[Core]   = mur_Core * mu0	;
-	// mu[Core]   = 1 * mu0	;
 	nu[]       = 1 / mu[]      	;
 
 	//Conductivity
@@ -90,7 +89,7 @@ Group {
 	SourceI_Cir     = Region[{}]; // current sources
 
 	For i In {1:3}		
-		//Primary voltages
+		// Primary voltages
 		xx = 10001 + (i-1) * 100  ;
 		yy = 10001 + i * 5  * 100 ;
 		zz = 10001 + i * 100 * 100;
@@ -98,11 +97,11 @@ Group {
 		Voltage_pr~{i}  = Region[{xx}]            ;  //Primary voltage source
 		SourceV_Cir    += Region[{Voltage_pr~{i}}];
 
-		//Input resistances
+		// Input resistances
 		R_in~{i}        = Region[{yy}]      ; // Resistance in series with the voltage source
 		Resistance_Cir += Region[{R_in~{i}}];
 
-		//Output resistances
+		// Output resistances
 		If((test == 0) || (test == 1) || ((test == 2) && (Phase != 90) && (Phase != -90)))
 			R_out~{i}       = Region[{zz}]       ; 		// The load resistance
 			Resistance_Cir += Region[{R_out~{i}}];
@@ -126,30 +125,38 @@ Function {
 	Omega = 2*Pi*Freq;
 
 	For i In {1:3}
-		//Input Voltages:
+		// Input Voltages:
 		V_pr~{i}    = Voltage_primary  ;
 		phase_V~{i} = 120 * (i-1) * deg;
 
-		//Input resistances
-		Resistance[R_in~{i}] = 1e-3 ; //Inputs series resistance
+		// Input resistances
+		Resistance[R_in~{i}] = 1e-3 ; 
 
-		//Load resistances
+		// Load resistances
 		If (test == 0)
-			Resistance[R_out~{i}] = 750*mili   ; //Short circuit
+			//Short circuit
+			Resistance[R_out~{i}] = 750*mili   ; 
 		ElseIf (test == 1)
-			Resistance[R_out~{i}] = 1e7        ; //Open circuit  
+			//Open circuit  
+			Resistance[R_out~{i}] = 1e7        ; 
 		Else 
+		// User defined load
 		If(Phase == 0)
-			Resistance[R_out~{i}] = 10^Load_exponent; //Defined load
+			// Purely resistive load
+			Resistance[R_out~{i}] = 10^Load_exponent; 
 		ElseIf(Phase == 90)
+			// Purely inductive load
 			Inductance[L_out~{i}] = (10^Load_exponent)/(Omega);
 		ElseIf(Phase == -90)
+			// Purely capacitive load
 			Capacitance[C_out~{i}] = 1/((10^Load_exponent)*(Omega));
 		ElseIf(Phase > 0)
+			// R-L load
 			K = Tan[Phase*deg];
 			Resistance[R_out~{i}] = (10^Load_exponent)/(Sqrt[1+(K*K)]);
 			Inductance[L_out~{i}] =  (K*(10^Load_exponent))/(Omega*Sqrt[1+(K*K)]);
 		ElseIf(Phase < 0)
+			// R-C Load
 			K = Tan[-Phase*deg];
 			Resistance[R_out~{i}] = (10^Load_exponent)*Sqrt[1+(K*K)];
 			Capacitance[C_out~{i}] = (K)/(Omega*(10^Load_exponent)*Sqrt[1+(K*K)]);
@@ -191,7 +198,8 @@ Constraint {
 
 	{ Name ElectricalCircuit ; Type Network ;
 
-    Case Circuit_1 { //Star coupling for the primary
+    Case Circuit_1 {
+		// Star coupling for the primary
 		If(Prim_connection == 0)
 			For i In {1:3}
 				aa = 2+(i-1);
@@ -203,7 +211,8 @@ Constraint {
 				{Region Primary_p_phase~{i}; Branch {bb, cc} ; }
 				{Region Primary_m_phase~{i}; Branch {cc, 1} ; }
 			EndFor
-		Else //Primary Delta
+		Else 
+			// Delta coupling for the primary
 			For i In {1:3}
 				aa = 2+(i-1); 
 				bb = 5+(i-1); 
@@ -222,7 +231,8 @@ Constraint {
 }  
 
     Case Circuit_2 { 
-		If(Second_connection == 0)  //Star coupling for the secondary
+		If(Second_connection == 0)
+			// Star coupling for the secondary
 			For i In {1:3}
 				aa = 2+(i-1); 
 				bb = 5+(i-1); 
@@ -231,39 +241,52 @@ Constraint {
 				{Region Secondary_p_phase~{i}; Branch {1 , aa} ; }
 				{Region Secondary_m_phase~{i}; Branch {aa, bb} ; }
 				If(test == 0 || test == 1)
+					// Purely resistive load
 					{Region R_out~{i}            ; Branch {bb, 1 } ; }
 				Else
 					If(Phase == 0)
+						// Purely resistive load
 						{Region R_out~{i}            ; Branch {bb, 1 } ; }
 					ElseIf(Phase == 90)
+						// Purely inductive load
 						{Region L_out~{i}            ; Branch {bb, 1 } ; }
 					ElseIf(Phase == -90)
+						// Purely capacitive load
 						{Region C_out~{i}            ; Branch {bb, 1 } ; }
 					ElseIf(Phase > 0)
+						// R-L serie load
 						{Region R_out~{i}            ; Branch {bb, cc } ; }
 						{Region L_out~{i}            ; Branch {cc, 1 } ; }
 					ElseIf(Phase < 0)
+						// R-C parallel load
 						{Region R_out~{i}            ; Branch {bb, 1 } ; }
 						{Region C_out~{i}            ; Branch {bb, 1 } ; }
 					EndIf
 				EndIf
 			EndFor
 
-		Else  //Delta coupling for the secondary
+		Else 
+			// Delta coupling for the secondary
 			For i In {1:3}
 				If(test == 0 || test ==1)
+					// Purely resistive load
 					{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
 				Else
 					If(Phase == 0)
+						// Purely resistive load
 						{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
 					ElseIf(Phase == 90)
+						// Purely inductive load
 						{Region L_out~{i}            ; Branch {1, 2+(i-1) } ; }
 					ElseIf(Phase == -90)
+						// Purely capacitive load
 						{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }
 					ElseIf(Phase > 0)
+						// R-L serie load
 						{Region R_out~{i}            ; Branch {1, 5+(i-1) } ; }
 						{Region L_out~{i}            ; Branch {5+(i-1), 2+(i-1) } ; }
 					ElseIf(Phase < 0)
+						// R-C parallel load
 						{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
 						{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }
 					EndIf
@@ -275,7 +298,7 @@ Constraint {
 			{Region Secondary_m_phase~{2}; Branch {8 , 4}  ; }
 			{Region Secondary_p_phase~{3}; Branch {4 , 10} ; }
 			{Region Secondary_m_phase~{3}; Branch {10, 2}  ; }
-      EndIf
+		EndIf
     }
   }
 }
@@ -285,9 +308,10 @@ Include "../Libraries/Lib_Magnetodynamics2D_av_Cir.pro";
 PostOperation {
 { Name Map_a; NameOfPostProcessing Magnetodynamics2D_av;
     Operation {
-      // Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
-      // Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
-      // Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+		// Visualisation files
+		// Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+		// Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
+		// Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
 	  
 	  
 		// Exterior characteristic files 
