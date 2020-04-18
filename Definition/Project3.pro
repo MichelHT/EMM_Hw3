@@ -102,13 +102,27 @@ Group {
       Resistance_Cir += Region[{R_in~{i}}];
 
       //Output resistances
-      R_out~{i}       = Region[{zz}]       ; //The load resistance
-      Resistance_Cir += Region[{R_out~{i}}];
+	  If((test == 0) || (test == 1) || ((test == 2) && (Phase != 90) && (Phase != -90)))
+		  R_out~{i}       = Region[{zz}]       ; 		// The load resistance
+		  Resistance_Cir += Region[{R_out~{i}}];
+	  EndIf
+	  If(test == 2)
+		  If (Phase>0)
+			  zz = zz + 1;
+			  L_out~{i}   = Region[{zz}]       ; 		// The load inductance
+			  Inductance_Cir += Region[{L_out~{i}}];
+		  ElseIf (Phase<0)
+			  zz = zz + 2;
+			  C_out~{i}   = Region[{zz}]       ;		// The load capacitance
+			  Capacitance_Cir += Region[{C_out~{i}}];
+		  EndIf	
+	  EndIf
    EndFor
 }
 
 Function { 
   deg = Pi/180  ;
+  Omega = 2*Pi*Freq;
 
   For i In {1:3}
     //Input Voltages:
@@ -124,9 +138,22 @@ Function {
     ElseIf (test == 1)
    	  Resistance[R_out~{i}] = 1e7        ; //Open circuit  
     Else 
-      Resistance[R_out~{i}] = 10^Load_exponent; //Defined load
+		If(Phase == 0)
+			Resistance[R_out~{i}] = 10^Load_exponent; //Defined load
+		ElseIf(Phase == 90)
+			Inductance[L_out~{i}] = (10^Load_exponent)/(Omega);
+		ElseIf(Phase == -90)
+			Capacitance[C_out~{i}] = 1/((10^Load_exponent)*(Omega));
+		ElseIf(Phase > 0)
+			K = Tan[Phase*deg];
+			Resistance[R_out~{i}] = (10^Load_exponent)/(Sqrt[1+(K*K)]);
+			Inductance[L_out~{i}] =  (K*(10^Load_exponent))/(Omega*Sqrt[1+(K*K)]);
+		ElseIf(Phase < 0)
+			K = Tan[-Phase*deg];
+			Resistance[R_out~{i}] = (10^Load_exponent)*Sqrt[1+(K*K)];
+			Capacitance[C_out~{i}] = (K)/(Omega*(10^Load_exponent)*Sqrt[1+(K*K)]);
+		EndIf
     EndIf
-
   EndFor
 }
 
@@ -204,14 +231,44 @@ Constraint {
 
           {Region Secondary_p_phase~{i}; Branch {1 , aa} ; }
           {Region Secondary_m_phase~{i}; Branch {aa, bb} ; }
-          {Region R_out~{i}            ; Branch {bb, 1 } ; }
-
+		  If(test == 0 || test == 1)
+			  {Region R_out~{i}            ; Branch {bb, 1 } ; }
+		  Else
+			  If(Phase == 0)
+					{Region R_out~{i}            ; Branch {bb, 1 } ; }
+			  ElseIf(Phase == 90)
+					{Region L_out~{i}            ; Branch {bb, 1 } ; }
+			  ElseIf(Phase == -90)
+					{Region C_out~{i}            ; Branch {bb, 1 } ; }
+			  ElseIf(Phase > 0)
+					{Region R_out~{i}            ; Branch {bb, 500 } ; }
+					{Region L_out~{i}            ; Branch {500, 1 } ; }
+			  ElseIf(Phase < 0)
+					{Region R_out~{i}            ; Branch {bb, 1 } ; }
+					{Region C_out~{i}            ; Branch {bb, 1 } ; }
+			  EndIf
+		  EndIf
         EndFor
 
       Else  //Delta coupling for the secondary
-
         For i In {1:3}
-          {Region R_out~{i}            ; Branch {1 , 2+(i-1)} ; }
+		  If(test == 0 || test ==1)
+				{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
+		  Else
+			  If(Phase == 0)
+					{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
+			  ElseIf(Phase == 90)
+					{Region L_out~{i}            ; Branch {1, 2+(i-1) } ; }
+			  ElseIf(Phase == -90)
+					{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }
+			  ElseIf(Phase > 0)
+					{Region R_out~{i}            ; Branch {1, 500 } ; }
+					{Region L_out~{i}            ; Branch {500, 2+(i-1) } ; }
+			  ElseIf(Phase < 0)
+					{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
+					{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }
+			  EndIf
+		  EndIf
         EndFor   
           {Region Secondary_p_phase~{1}; Branch {2 , 6}  ; }
           {Region Secondary_m_phase~{1}; Branch {6 , 3}  ; }
@@ -235,12 +292,34 @@ PostOperation {
 	  
 	  
 	  // Exterior characteristic files 
-	  Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/U2_ph1.txt" ];
-	  Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/I2_ph1.txt" ];
-	  Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/U2_ph2.txt" ];
-	  Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/I2_ph2.txt" ];
-	  Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/U2_ph3.txt" ];
-	  Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/I2_ph3.txt" ];
+	  If (Phase != 90 && Phase != -90)
+		  Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/U2_Rout_ph1.txt" ];
+		  Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/I2_Rout_ph1.txt" ];
+		  Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/U2_Rout_ph2.txt" ];
+		  Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/I2_Rout_ph2.txt" ];
+		  Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/U2_Rout_ph3.txt" ];
+		  Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/I2_Rout_ph3.txt" ];
+	  EndIf
+	  If(Phase > 0)
+		  Print[ U, OnRegion L_out_1, Format FrequencyTable, File > "../Results/U2_Lout_ph1.txt" ];
+		  Print[ U, OnRegion L_out_2, Format FrequencyTable, File > "../Results/U2_Lout_ph2.txt" ];
+		  Print[ U, OnRegion L_out_3, Format FrequencyTable, File > "../Results/U2_Lout_ph3.txt" ];
+		  If(Phase == 90)
+			 Print[ I, OnRegion L_out_1, Format FrequencyTable, File > "../Results/I2_Lout_ph1.txt" ];
+			 Print[ I, OnRegion L_out_2, Format FrequencyTable, File > "../Results/I2_Lout_ph2.txt" ];
+			 Print[ I, OnRegion L_out_3, Format FrequencyTable, File > "../Results/I2_Lout_ph3.txt" ]; 
+		  EndIf
+	  ElseIf(Phase < 0)
+		  Print[ I, OnRegion C_out_1, Format FrequencyTable, File > "../Results/I2_Cout_ph1.txt" ];
+		  Print[ I, OnRegion C_out_2, Format FrequencyTable, File > "../Results/I2_Cout_ph2.txt" ];
+		  Print[ I, OnRegion C_out_3, Format FrequencyTable, File > "../Results/I2_Cout_ph3.txt" ];
+		  If(Phase == -90)
+			Print[ U, OnRegion C_out_1, Format FrequencyTable, File > "../Results/U2_Cout_ph1.txt" ];
+			Print[ U, OnRegion C_out_2, Format FrequencyTable, File > "../Results/U2_Cout_ph2.txt" ];
+			Print[ U, OnRegion C_out_3, Format FrequencyTable, File > "../Results/U2_Cout_ph3.txt" ];  
+		  EndIf
+	  EndIf
+	  
 	  
      //2b filled after discussion
     }

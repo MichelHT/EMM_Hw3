@@ -37,7 +37,7 @@ DefineConstant[
     
 /************************************ Electrical definition ******************************************************/	
 DefineConstant[
-	       type = { 0 , Name StrCat[PathElectricalParameters,"04type A or B?"], Highlight "Red", Visible 1,
+	       type = { 0 , Name StrCat[PathElectricalParameters,"00type A or B?"], Highlight "Red", Visible 1,
     Choices{
       0 = " type A ",
       1 = " type B "
@@ -52,14 +52,14 @@ DefineConstant[
     } }];
 
 DefineConstant[
-        Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"03Primary windings connection"], Highlight "Red", Visible 1,
+        Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"04Primary windings connection"], Highlight "Red", Visible 1,
     Choices{
       0 = "Star",
       1 = "Delta"
     } }];
 
 DefineConstant[
-        Second_connection = { 0 , Name StrCat[PathElectricalParameters,"04Secondary windings connection"], Highlight "Red", Visible 1,
+        Second_connection = { 0 , Name StrCat[PathElectricalParameters,"05Secondary windings connection"], Highlight "Red", Visible 1,
     Choices{
       0 = "Star",
       1 = "Delta"
@@ -100,8 +100,9 @@ Air_Gap2     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters ,"0
 H_Hole       = DefineNumber[0.02       , Name StrCat[PathGeometricParameters ,"10Height of the hole"      ], Highlight "Grey"];
 H_Inductor1  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters ,"11Height Inductor 1 "      ], Highlight "Grey"];
 H_Inductor2  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters ,"12Height Inductor 2 "      ], Highlight "Grey"];
-Primary_turns= DefineNumber[20         , Name StrCat[PathElectricalParameters,"05Number of primary turns"], Highlight "Red" ];
+Primary_turns= DefineNumber[20         , Name StrCat[PathElectricalParameters,"06Number of primary turns"], Highlight "Red" ];
 Load_exponent= DefineNumber[-3     , Name StrCat[PathElectricalParameters,"02Order of magnitude of the load expressed in Ohm"  ], Highlight "Red" , Visible test==2     ];
+Phase 		 = DefineNumber[0     , Name StrCat[PathElectricalParameters,"03Phase of the load connected to the secondary (in deg)"  ], Highlight "Red" , Visible test==2     ];
 Air_Gap3     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters ,"13Air gap in the core"     ], Highlight "Grey", Visible Core_Air_Gap];
 W_Centre     = DefineNumber[0.02       , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "], Highlight "Grey", Visible Geo];
 H_Centre     = DefineNumber[0.01       , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"], Highlight "Grey", Visible Geo];
