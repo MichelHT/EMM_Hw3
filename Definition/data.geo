@@ -15,65 +15,65 @@ mu0  = 4*Pi*1e-7;
 /************************************ Geometry definition ******************************************************/    
 
 DefineConstant[
-	       Geo = { 0 , Name StrCat[PathGeometricParameters,"00Which Transfo type ?"], Highlight "Green", Visible 1,
-    Choices{
-      0 = "Core type",
-      1 = "Shell type"
+	Geo = { 0 , Name StrCat[PathGeometricParameters,"00Which Transfo type ?"], Highlight "Green", Visible 1,
+		Choices{
+			0 = "Core type",
+			1 = "Shell type"
     } }];
 
 DefineConstant[
-	       Core_Air_Gap = { 0 , Name StrCat[PathGeometricParameters,"01Air gap in the core?"], Highlight "Green", Visible 1,
-    Choices{
-      0 = "No",
-      1 = "Yes"
+	Core_Air_Gap = { 0 , Name StrCat[PathGeometricParameters,"01Air gap in the core?"], Highlight "Green", Visible 1,
+		Choices{
+			0 = "No",
+			1 = "Yes"
     } }];
 	
 DefineConstant[
-	       Laminated_Core = { 1 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
-    Choices{
-      0 = "No",
-      1 = "Yes"
+	Laminated_Core = { 1 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
+		Choices{
+			0 = "No",
+			1 = "Yes"
     } }];
     
 /************************************ Electrical definition ******************************************************/	
 DefineConstant[
-	       type = { 0 , Name StrCat[PathElectricalParameters,"00type A or B?"], Highlight "Red", Visible 1,
-    Choices{
-      0 = " type A ",
-      1 = " type B "
+	type = { 0 , Name StrCat[PathElectricalParameters,"00type A or B?"], Highlight "Red", Visible 1,
+		Choices{
+			0 = " type A ",
+			1 = " type B "
     } }];
 	
 DefineConstant[
-        test = { 0 , Name StrCat[PathElectricalParameters,"01Load connected to the secondary"], Highlight "Red", Visible 1,
-    Choices{
-      0 = "Short circuit",
-      1 = "Open Circuit",
-      2 = "Define your load"
+    test = { 0 , Name StrCat[PathElectricalParameters,"01Load connected to the secondary"], Highlight "Red", Visible 1,
+		Choices{
+			0 = "Short circuit",
+			1 = "Open Circuit",
+			2 = "Define your load"
     } }];
 
 DefineConstant[
-        Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"04Primary windings connection"], Highlight "Red", Visible 1,
-    Choices{
-      0 = "Star",
-      1 = "Delta"
+    Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"04Primary windings connection"], Highlight "Red", Visible 1,
+		Choices{
+			0 = "Star",
+			1 = "Delta"
     } }];
 
 DefineConstant[
-        Second_connection = { 0 , Name StrCat[PathElectricalParameters,"05Secondary windings connection"], Highlight "Red", Visible 1,
-    Choices{
-      0 = "Star",
-      1 = "Delta"
+    Second_connection = { 0 , Name StrCat[PathElectricalParameters,"05Secondary windings connection"], Highlight "Red", Visible 1,
+		Choices{
+			0 = "Star",
+			1 = "Delta"
     } }];
 
 
 If (type == 0) 
-  Voltage_primary  = 2.4*kilo ;
-  Voltage_secondary= 240      ;
-  Nominal_S        = 200*kilo ;
+	Voltage_primary  = 2.4*kilo ;
+	Voltage_secondary= 240      ;
+	Nominal_S        = 200*kilo ;
 Else
-  Voltage_primary  = 60*kilo  ;
-  Voltage_secondary= 2.4*kilo ;
-  Nominal_S        = 20*kilo  ;
+	Voltage_primary  = 60*kilo  ;
+	Voltage_secondary= 2.4*kilo ;
+	Nominal_S        = 20*kilo  ;
 EndIf
 
 transfo_ratio = Voltage_primary/Voltage_secondary;//transformation ratio
