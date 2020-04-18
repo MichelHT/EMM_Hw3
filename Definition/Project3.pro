@@ -109,7 +109,7 @@ Group {
 	  If(test == 2)
 		  If (Phase>0)
 			  zz = zz + 1;
-			  L_out~{i}   = Region[{zz}]       ; 		// The load inductance
+			  L_out~{i}   = Region[{zz}]           ; 		// The load inductance
 			  Inductance_Cir += Region[{L_out~{i}}];
 		  ElseIf (Phase<0)
 			  zz = zz + 2;
@@ -241,8 +241,8 @@ Constraint {
 			  ElseIf(Phase == -90)
 					{Region C_out~{i}            ; Branch {bb, 1 } ; }
 			  ElseIf(Phase > 0)
-					{Region R_out~{i}            ; Branch {bb, 500 } ; }
-					{Region L_out~{i}            ; Branch {500, 1 } ; }
+					{Region R_out~{i}            ; Branch {bb, 5000 } ; }
+					{Region L_out~{i}            ; Branch {5000, 1 } ; }
 			  ElseIf(Phase < 0)
 					{Region R_out~{i}            ; Branch {bb, 1 } ; }
 					{Region C_out~{i}            ; Branch {bb, 1 } ; }
@@ -262,8 +262,8 @@ Constraint {
 			  ElseIf(Phase == -90)
 					{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }
 			  ElseIf(Phase > 0)
-					{Region R_out~{i}            ; Branch {1, 500 } ; }
-					{Region L_out~{i}            ; Branch {500, 2+(i-1) } ; }
+					{Region R_out~{i}            ; Branch {1, 5000 } ; }
+					{Region L_out~{i}            ; Branch {5000, 2+(i-1) } ; }
 			  ElseIf(Phase < 0)
 					{Region R_out~{i}            ; Branch {1, 2+(i-1) } ; }
 					{Region C_out~{i}            ; Branch {1, 2+(i-1) } ; }

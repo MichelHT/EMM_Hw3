@@ -1,7 +1,7 @@
 % This functions plot the exterior characteristic  of the transformer
 % corresponding to the simulations results given as input.
 function Exterior_Characteristic(Phase,Directory)
-
+close all;
 %% Test Directory:
 % 'Core_type_first_try';    ===> Phase = 0
 % 'Shell_type_first_try'    ===> Phase = 0
@@ -131,14 +131,20 @@ set(gca,'fontsize',20,'fontname','Times','LineWidth',0.5);
 %% Fresnel diagram open circuit
 
 Figure2=figure(2);clf;set(Figure2,'defaulttextinterpreter','latex');
-col = {'r' 'b' 'k'}
+col = {'r' 'b' 'k'};
 hold on;
 grid;
-for(i=1:3)    
-Vec_V2_Vide{i} = [V2{i}(end,2) V2{i}(end,3)];
-line([0 Vec_V2_Vide{i}(1)] , [0 Vec_V2_Vide{i}(2)],'linewidth',3,'color',col{i});
-end
 axis('equal')
+for(i=1:3)    
+    Vec_V2_Vide{i} = [V2{i}(1,2) V2{i}(1,3)];
+    line([0 Vec_V2_Vide{i}(1)] , [0 Vec_V2_Vide{i}(2)],'linewidth',3,'color',col{i});
+end
+
+for(i=1:3)
+    Vec_I2_Vide{i} = [-I2{i}(1,2) -I2{i}(1,3)];
+    line([0 Vec_I2_Vide{i}(1)] , [0 Vec_I2_Vide{i}(2)],'linewidth',3,'color',col{i});
+end
+
 legend('Phase 1', 'Phase 2', 'Phase 3');
 set(gca,'fontsize',20,'fontname','Times','LineWidth',0.5);
 
