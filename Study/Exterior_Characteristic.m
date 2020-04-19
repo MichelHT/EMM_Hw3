@@ -128,7 +128,7 @@ legend('Phase 1', 'Phase 2', 'Phase 3');
 set(gca,'fontsize',20,'fontname','Times','LineWidth',0.5);
 
 
-%% Fresnel diagram (to verify the phase of the load)
+%% Fresnel diagram 
 % Whatever the value of Load, the phase should remain the same.
 Load = 30; % Load = 1 ==> Almost Shortt circuit ; Load = length(V2{i}(:,2))  ==> Almost open circuit ; Smtg else: between the 2
 
@@ -153,5 +153,12 @@ end
 legend('Phase 1', 'Phase 2', 'Phase 3');
 set(gca,'fontsize',20,'fontname','Times','LineWidth',0.5);
 
+% Computing the phase angle
+for(i=1:3)
+    for(j=1:length(V2{1}(:,1)))
+        temp = ((V2{i}(j,2)*(-I2{i}(j,2)))+(V2{i}(j,3)*(-I2{i}(j,3))))/(I2_norm(i,j)*V2_norm(i,j));
+        phi(i,j) = (acos(temp))*(180/pi);
+    end
+end
 
 end
