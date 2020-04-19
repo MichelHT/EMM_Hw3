@@ -9,6 +9,7 @@ cm   = 1e-2     ;
 mili = 1e-3     ;
 kilo = 1e3      ;
 mega = 1e6      ;
+giga = 1e9      ;
 mu0  = 4*Pi*1e-7;
 
 
@@ -29,12 +30,12 @@ DefineConstant[
     } }];
 	
 DefineConstant[
-	Laminated_Core = { 1 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
+	Laminated_Core = { 0 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
 		Choices{
 			0 = "No",
 			1 = "Yes"
     } }];
-    
+ 
 /************************************ Electrical definition ******************************************************/	
 DefineConstant[
 	type = { 0 , Name StrCat[PathElectricalParameters,"00type A or B?"], Highlight "Red", Visible 1,
@@ -65,7 +66,6 @@ DefineConstant[
 			1 = "Delta"
     } }];
 
-
 If (type == 0) 
 	Voltage_primary  = 2.4*kilo ;
 	Voltage_secondary= 240      ;
@@ -78,17 +78,14 @@ EndIf
 
 transfo_ratio = Voltage_primary/Voltage_secondary;//transformation ratio
 
-//Flag for laminated core (& insulation?) should be added as well 
-//thickness core 2b defined ..
-
 /************************************ Mesh parameters ******************************************************/
 
-lc_Holes = DefineNumber[0.001      , Name StrCat[PathMeshParameters     ,"01Internal corners of the core    "],Highlight "LightBlue1"];
-lc_Core_Corner    = DefineNumber[0.001       , Name StrCat[PathMeshParameters     ,"02External corners of the core "],Highlight "LightBlue1"];
-lc_Windings    = DefineNumber[0.001       , Name StrCat[PathMeshParameters     ,"02Windings "],Highlight "LightBlue1"];
-lc_Air    = DefineNumber[0.01       , Name StrCat[PathMeshParameters     ,"02Away from the transformer "],Highlight "LightBlue1"];
-
-/************************************ Geometrical parameters ******************************************************/
+lc_Holes      = DefineNumber[0.001 , Name StrCat[PathMeshParameters, "01Internal corners of the core "], Highlight "LightBlue1"];
+lc_Air        = DefineNumber[0.01  , Name StrCat[PathMeshParameters, "02Away from the transformer    "], Highlight "LightBlue1"];
+lc_Windings   = DefineNumber[0.001 , Name StrCat[PathMeshParameters, "02Windings                     "], Highlight "LightBlue1"];
+lc_Core_Corner= DefineNumber[0.001 , Name StrCat[PathMeshParameters, "02External corners of the core "], Highlight "LightBlue1"];
+ 
+ /************************************ Geometrical parameters ******************************************************/
 
 W_Inductor1  = DefineNumber[0.0025     , Name StrCat[PathGeometricParameters ,"03Width Inductor 1  "      ], Highlight "Grey"];
 W_Inductor2  = DefineNumber[0.0025     , Name StrCat[PathGeometricParameters ,"04Width Inductor 2  "      ], Highlight "Grey"];
@@ -100,21 +97,21 @@ Air_Gap2     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters ,"0
 H_Hole       = DefineNumber[0.02       , Name StrCat[PathGeometricParameters ,"10Height of the hole"      ], Highlight "Grey"];
 H_Inductor1  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters ,"11Height Inductor 1 "      ], Highlight "Grey"];
 H_Inductor2  = DefineNumber[H_Hole*0.8 , Name StrCat[PathGeometricParameters ,"12Height Inductor 2 "      ], Highlight "Grey"];
-Primary_turns= DefineNumber[20         , Name StrCat[PathElectricalParameters,"06Number of primary turns"], Highlight "Red" ];
-Load_exponent= DefineNumber[-3     , Name StrCat[PathElectricalParameters,"02Order of magnitude of the load expressed in Ohm"  ], Highlight "Red" , Visible test==2     ];
-Phase 		 = DefineNumber[0     , Name StrCat[PathElectricalParameters,"03Phase of the load connected to the secondary (in deg)"  ], Highlight "Red" , Visible test==2     ];
+Primary_turns= DefineNumber[20         , Name StrCat[PathElectricalParameters,"06Number of primary turns" ], Highlight "Red" ];
 Air_Gap3     = DefineNumber[0.001      , Name StrCat[PathGeometricParameters ,"13Air gap in the core"     ], Highlight "Grey", Visible Core_Air_Gap];
 W_Centre     = DefineNumber[0.02       , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "], Highlight "Grey", Visible Geo];
 H_Centre     = DefineNumber[0.01       , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"], Highlight "Grey", Visible Geo];
+Load_exponent= DefineNumber[-3         , Name StrCat[PathElectricalParameters,"02Order of magnitude of the load expressed in Ohm"      ], Highlight "Red" , Visible test==2];
+Phase 		   = DefineNumber[0          , Name StrCat[PathElectricalParameters,"03Phase of the load connected to the secondary (in deg)"], Highlight "Red" , Visible test==2];
 
 Num_Surf = 1 ;
 
 If (Geo == 1)	
-	R_int  = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*1.5;		// Radius of the internal domain circle. 
-	R_ext = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*3;
+	R_int  = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*1.5;		 
+	R_ext = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*1.7;
 Else
-	R_int  = Sqrt[((W_Leg*1.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 +(Air_Gap3*Core_Air_Gap)*0.5))^2]*1.5;								// Radius of the internal domain circle. 
-	R_ext = Sqrt[((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 + (Air_Gap3*Core_Air_Gap)*0.5))^2]*3;
+	R_int  = Sqrt[((W_Leg*1.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 +(Air_Gap3*Core_Air_Gap)*0.5))^2]*1.5;								 
+	R_ext = Sqrt[((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 + (Air_Gap3*Core_Air_Gap)*0.5))^2]*1.7;
 EndIf
 
 /************************************ Physical Tags ******************************************************/
