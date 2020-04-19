@@ -1,15 +1,38 @@
 Include "data.geo";
 
-mur_Core = DefineNumber[1000, Name StrCat[PathMaterialsParameters , "Relative permeability of the core"], Highlight "Yellow"];
-Freq     = DefineNumber[50  , Name StrCat[PathElectricalParameters, "Operating frequency              "], Highlight "Red"];
+muir_Core      = DefineNumber[1000  , Name StrCat[PathMaterialsParameters , "Relative permeability of the core"], Highlight "Yellow"]; //static permeability
+Snoek_constant = DefineNumber[4*giga, Name StrCat[PathMaterialsParameters , "Snoek constant"                   ], Highlight "Yellow"]; // [4,12]gigaHz
+Freq           = DefineNumber[50    , Name StrCat[PathElectricalParameters, "Operating frequency              "], Highlight "Red"   ];
+B_sat          = DefineNumber[1.8   , Name StrCat[PathElectricalParameters, "Saturation magnetic flux density "], Highlight "Red"   ]; //varies with the magnetic material only defined for ferrites magnetic material
+
+DefineConstant[
+  Field_Card = { 0 , Name StrCat[PathElectricalParameters,"06Show field card?"], Highlight "Red", Visible 1,
+    Choices{
+      0 = "No ",
+      1 = "Yes "
+    } }];
+
+DefineConstant[
+  Flag_FrequencyDomain = {1 , Name StrCat[PathElectricalParameters,"07Frequency domain analysis?"], Highlight "Red", Visible 1,
+    Choices{
+      0 = "No ",
+      1 = "Yes "
+    } }];
+
+DefineConstant[
+  OverWriteOutput = {0, Name StrCat[PathResultsUI,"Overwrite output?"], Visible 1,
+    Choices{
+      0 = "No ",
+      1 = "Yes "
+    } }];
 
 Group {
 
 	// Physical regions
 	Air         = Region[{Air_ext}]        ;
-	Air_Inf	  = Region[{AirInf}]         ;
-	Sur_Air_Ext = Region[{Skin_airInf}]    ; // exterior boundary
-	Core        = Region[{Core}]           ; // magnetic core of the transformer, assumed non-conducting
+	Air_Inf	    = Region[{AirInf}]         ;
+	Sur_Air_Ext = Region[{Skin_airInf}]    ; 
+	Core        = Region[{Core}]           ;
 
 	For i In {1:3}
 		a = Primary_ph1_p + (i - 1) * 100    ; 
@@ -29,27 +52,40 @@ Group {
 	EndFor 
 
 	// Abstract regions 
-	Vol_Mag   = Region[{Air, Core, Coils, Air_Inf}]; // full magnetic domain (surfaces)
-	Vol_S_Mag = Region[{Coils}]           ; // Stranded conductors only. 
-	Vol_Inf_Mag = Region[{Air_Inf}]         ; //We are applying the infinite shell transformation for accuracy
-	Val_Rint = R_int ;  Val_Rext = R_ext    ; // Interior and exterior radii of ring
-	If(Laminated_Core == 0)
+	Vol_Mag     = Region[{Air, Core, Coils, Air_Inf}]; 
+	Vol_S_Mag   = Region[{Coils}]                    ; 
+	Vol_Inf_Mag = Region[{Air_Inf}]                  ; 
+	
+  Val_Rint = R_int ;  
+  Val_Rext = R_ext ; 
+	
+  If(Laminated_Core==0)
 		Vol_C_Mag = Region[{Core}];
 	EndIf
 }
 
 Function{
-	//Permeability
-	mu[Air]    = 1 * mu0       	;
-	mu[Air_Inf]    = 1 * mu0      ;
-	mu[Coils]  = 1 * mu0       	;
-	mu[Core]   = mur_Core * mu0	;
-	nu[]       = 1 / mu[]      	;
+  //the frequency dependant permeability (Debye model)
+  relaxation_frequency = Snoek_constant/muir_Core   ;
+  Omega                = 2*Pi*Freq                  ;
+  tau                  = 1/2/Pi/relaxation_frequency;  
+
+	//Constant Permeability
+	mu[Core]   = Re[muir_Core*mu0/Complex[1,Omega*tau]];
+
+  mu[Air]    = 1 * mu0 ;
+	mu[Air_Inf]= 1 * mu0 ;
+	mu[Coils]  = 1 * mu0 ;
+
+	nu[]       = 1 / mu[];
 
 	//Conductivity
-	sigma[Coils]  = 1e7       	;
-	sigma[Core]  = 1e7       	;
-   
+	sigma[Coils]  = 1e7;
+
+	If (Laminated_Core==0)
+    sigma[Core]   = 1e7;
+  EndIf
+
 	//Signs:
 	For i In {1:3}
 		SignBranch[Primary_p_phase~{i}]   =  1;
@@ -58,9 +94,8 @@ Function{
 		SignBranch[Secondary_m_phase~{i}] = -1;
 	EndFor
 
-	Ns[Primary_coils]   = Primary_turns              ;
-	Ns[Secondary_coils] = Primary_turns/transfo_ratio;
-
+	Ns[Primary_coils]  = Primary_turns              ;
+	Ns[Secondary_coils]= Primary_turns/transfo_ratio;
 
 	//Defining the current density: 
 	For i In {1:3}
@@ -72,14 +107,17 @@ Function{
 
 	js0[Coils] = Ns[] / Sc[] * Vector[0, 0, SignBranch[]];
 
-	thickness_Core = 1;
+  //Boucherot formulation
 
-	//2b added to the definition of the voltage:
-	CoefGeos[Coils] = SignBranch[] * thickness_Core; 
-	CoefGeos[Core] = thickness_Core;
+  //thickness_Core    = Voltage_secondary/4.44/Freq/Sqrt[2]/0.75/B_sat/2/js0[Coils]/W_Inductor2; //75% Bsat = marge de sécurité pour ne pas atteindre la saturation
+  //ATTENTION, il faut toujours avoir W_Inductor2 == W_Inductor1
+  //erreur ici, je ne sais toujours comment faire pour débeuguer... any ideas?  
+  
+  thickness_Core = 1 ;//using this value for tests
+	
+  CoefGeos[Coils] = SignBranch[] * thickness_Core; 
+	CoefGeos[Core]  = thickness_Core               ; 
 }
-
-Flag_CircuitCoupling = 1;
 
 Group {
 	Resistance_Cir  = Region[{}]; // resistances
@@ -109,11 +147,11 @@ Group {
 		If(test == 2)
 			If (Phase>0)
 				zz = zz + 1;
-				L_out~{i}   = Region[{zz}]           ; 		// The load inductance
+				L_out~{i}   = Region[{zz}]           ; // The load inductance
 				Inductance_Cir += Region[{L_out~{i}}];
 			ElseIf (Phase<0)
 				zz = zz + 2;
-				C_out~{i}   = Region[{zz}]       ;		// The load capacitance
+				C_out~{i}   = Region[{zz}]       ;		 // The load capacitance
 				Capacitance_Cir += Region[{C_out~{i}}];
 			EndIf	
 		EndIf
@@ -122,7 +160,6 @@ Group {
 
 Function { 
 	deg = Pi/180  ;
-	Omega = 2*Pi*Freq;
 
 	For i In {1:3}
 		// Input Voltages:
@@ -307,44 +344,100 @@ Include "../Libraries/Lib_Magnetodynamics2D_av_Cir.pro";
 
 PostOperation {
 { Name Map_a; NameOfPostProcessing Magnetodynamics2D_av;
+
     Operation {
-		// Visualisation files
-		// Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
-		// Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos" ];
-		// Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+
+    If (OverWriteOutput==1)
+       If (test==0) //short circuit test
+          DeleteFile["../Results/TransformerModel/UShortCircuit.txt"];
+          DeleteFile["../Results/TransformerModel/IShortCircuit.txt"];
+        ElseIf (test==1) //open ciruit test
+          DeleteFile["../Results/TransformerModel/UOpenCircuit.txt" ];
+          DeleteFile["../Results/TransformerModel/IOpenCircuit.txt" ];
+        ElseIf (test==2) //load defined by user
+          If (Phase != 90 && Phase != -90)
+            DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"    ];
+            DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph1.txt"    ];
+            DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph2.txt"    ];
+            DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph2.txt"    ];
+            DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph3.txt"    ];
+            DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph3.txt"    ];
+          EndIf
+          If (Phase > 0)
+            DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph1.txt"    ];
+            DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph2.txt"    ];
+            DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph3.txt"    ];
+            If(Phase == 90)
+              DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph1.txt"  ];
+              DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph2.txt"  ];
+              DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph3.txt"  ];
+            EndIf
+          ElseIf(Phase < 0)
+            DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph1.txt"  ];
+            DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph2.txt"  ];
+            DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph3.txt"  ];
+             If (Phase == -90)
+              DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph1.txt"];
+              DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph2.txt"];
+              DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph3.txt"];
+            EndIf
+          EndIf
+        EndIf
+      EndIf
+
+      //Do you want to see the field card?
+		  If (Field_Card==1)
+         Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+         Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
+         Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+      EndIf 
 	  
-	  
-		// Exterior characteristic files 
-		If (Phase != 90 && Phase != -90)
-			Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/U2_Rout_ph1.txt" ];
-			Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/I2_Rout_ph1.txt" ];
-			Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/U2_Rout_ph2.txt" ];
-			Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/I2_Rout_ph2.txt" ];
-			Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/U2_Rout_ph3.txt" ];
-			Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/I2_Rout_ph3.txt" ];
-		EndIf
-		If(Phase > 0)
-			Print[ U, OnRegion L_out_1, Format FrequencyTable, File > "../Results/U2_Lout_ph1.txt" ];
-			Print[ U, OnRegion L_out_2, Format FrequencyTable, File > "../Results/U2_Lout_ph2.txt" ];
-			Print[ U, OnRegion L_out_3, Format FrequencyTable, File > "../Results/U2_Lout_ph3.txt" ];
-			If(Phase == 90)
-				Print[ I, OnRegion L_out_1, Format FrequencyTable, File > "../Results/I2_Lout_ph1.txt" ];
-				Print[ I, OnRegion L_out_2, Format FrequencyTable, File > "../Results/I2_Lout_ph2.txt" ];
-				Print[ I, OnRegion L_out_3, Format FrequencyTable, File > "../Results/I2_Lout_ph3.txt" ]; 
-			EndIf
-		ElseIf(Phase < 0)
-			Print[ I, OnRegion C_out_1, Format FrequencyTable, File > "../Results/I2_Cout_ph1.txt" ];
-			Print[ I, OnRegion C_out_2, Format FrequencyTable, File > "../Results/I2_Cout_ph2.txt" ];
-			Print[ I, OnRegion C_out_3, Format FrequencyTable, File > "../Results/I2_Cout_ph3.txt" ];
-			If(Phase == -90)
-				Print[ U, OnRegion C_out_1, Format FrequencyTable, File > "../Results/U2_Cout_ph1.txt" ];
-				Print[ U, OnRegion C_out_2, Format FrequencyTable, File > "../Results/U2_Cout_ph2.txt" ];
-				Print[ U, OnRegion C_out_3, Format FrequencyTable, File > "../Results/U2_Cout_ph3.txt" ];  
-			EndIf
-		EndIf
-	  
-	  
-     //2b filled after discussion
+    If (Flag_FrequencyDomain)      
+
+/****************************************Equivalent model files*****************************************************/ 
+      If (test==0) //Short circuit
+
+      //  Print[ U, OnRegion Secondary_p_phase_1, Format Table, File > "../Results/TransformerModel/UShortCircuit.txt"];
+      //  Print[ I, OnRegion Secondary_p_phase_1, Format Table, File > "../Results/TransformerModel/IShortCircuit.txt"];
+
+      ElseIf (test==1)
+
+      //  Print[ U, OnRegion [{Primary_p_phase_1, R_in_1}], Format Table, File > "../Results/TransformerModel/UOpenCircuit.txt"];
+      //  Print[ I, OnRegion Primary_p_phase_1            , Format Table, File > "../Results/TransformerModel/IOpenCircuit.txt"];
+
+/***************************************** Exterior characteristic files**************************************************/ 
+
+      ElseIf(test==2 )
+
+    		If (Phase != 90 && Phase != -90)
+    			Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"   ];
+    			Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph1.txt"   ];
+    			Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph2.txt"   ];
+    			Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph2.txt"   ];
+    			Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph3.txt"   ];
+    			Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph3.txt"   ];
+    		EndIf
+    		If(Phase > 0)
+    			Print[ U, OnRegion L_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Lout_ph1.txt"   ];
+    			Print[ U, OnRegion L_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Lout_ph2.txt"   ];
+    			Print[ U, OnRegion L_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Lout_ph3.txt"   ];
+    			If(Phase == 90)
+    				Print[ I, OnRegion L_out_1, Format FrequencyTable, File > "../Results//ExteriorCharacteristic/I2_Lout_ph1.txt"];
+    				Print[ I, OnRegion L_out_2, Format FrequencyTable, File > "../Results//ExteriorCharacteristic/I2_Lout_ph2.txt"];
+    				Print[ I, OnRegion L_out_3, Format FrequencyTable, File > "../Results//ExteriorCharacteristic/I2_Lout_ph3.txt"]; 
+    			EndIf
+    		ElseIf(Phase < 0)
+    			Print[ I, OnRegion C_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Cout_ph1.txt"   ];
+    			Print[ I, OnRegion C_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Cout_ph2.txt"   ];
+    			Print[ I, OnRegion C_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Cout_ph3.txt"   ];
+    			If(Phase == -90)
+    				Print[ U, OnRegion C_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Cout_ph1.txt" ];
+    				Print[ U, OnRegion C_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Cout_ph2.txt" ];
+    				Print[ U, OnRegion C_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Cout_ph3.txt" ];  
+    			EndIf
+    		EndIf
+      EndIf
+    EndIf
     }
   }
 }
