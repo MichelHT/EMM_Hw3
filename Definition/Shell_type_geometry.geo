@@ -17,7 +17,7 @@ lc_Rectangle = lc_Holes;
 For j In {1:2}
 	For i In {1:3}
 		Num_Surf = Num_Surf + 1;
-		Call Create_Rectangle;
+		Call Create_Round_Rectangle;
 		Surf_Holes() += {Num_Surf};
 		Y_Rectangle = Y_Rectangle + H_Hole + H_Centre;		
 	EndFor

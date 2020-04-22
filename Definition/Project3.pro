@@ -3,7 +3,7 @@ Include "data.geo";
 muir_Core      = DefineNumber[1000  , Name StrCat[PathMaterialsParameters , "Relative permeability of the core"], Highlight "Yellow"]; //static permeability
 Snoek_constant = DefineNumber[4*giga, Name StrCat[PathMaterialsParameters , "Snoek constant"                   ], Highlight "Yellow"]; // [4,12]gigaHz
 Freq           = DefineNumber[50    , Name StrCat[PathElectricalParameters, "Operating frequency              "], Highlight "Red"   ];
-B_sat          = DefineNumber[1.8   , Name StrCat[PathElectricalParameters, "Saturation magnetic flux density "], Highlight "Red"   ]; //varies with the magnetic material only defined for ferrites magnetic material
+B_sat          = DefineNumber[1.8   , Name StrCat[PathElectricalParameters, "Saturation magnetic flux density [T]"], Highlight "Red"   ]; //varies with the magnetic material only defined for ferrites magnetic material
 
 DefineConstant[
   Field_Card = { 0 , Name StrCat[PathElectricalParameters,"06Show field card?"], Highlight "Red", Visible 1,
@@ -94,8 +94,8 @@ Function{
 		SignBranch[Secondary_m_phase~{i}] = -1;
 	EndFor
 
-	Ns[Primary_coils]  = Primary_turns              ;
-	Ns[Secondary_coils]= Primary_turns/transfo_ratio;
+	Ns[Primary_coils]  = Primary_Turns              ;
+	Ns[Secondary_coils]= Secondary_Turns            ;
 
 	//Defining the current density: 
 	For i In {1:3}
@@ -109,15 +109,17 @@ Function{
 
   //Boucherot formulation
 
-  //thickness_Core    = Voltage_secondary/4.44/Freq/Sqrt[2]/0.75/B_sat/2/js0[Coils]/W_Inductor2; //75% Bsat = marge de sécurité pour ne pas atteindre la saturation
+  thickness_Core    = Voltage_primary/4.44/Freq/Sqrt[2]/0.75/B_sat/Primary_Turns/W_Leg; //75% Bsat = marge de sécurité pour ne pas atteindre la saturation
   //ATTENTION, il faut toujours avoir W_Inductor2 == W_Inductor1
   //erreur ici, je ne sais toujours comment faire pour débeuguer... any ideas?  
   
-  thickness_Core = 1 ;//using this value for tests
+	// thickness_Core = 1 ;//using this value for tests
 	
-  CoefGeos[Coils] = SignBranch[] * thickness_Core; 
+	CoefGeos[Coils] = SignBranch[] * thickness_Core; 
 	CoefGeos[Core]  = thickness_Core               ; 
 }
+
+Flag_CircuitCoupling=1;
 
 Group {
 	Resistance_Cir  = Region[{}]; // resistances
@@ -172,7 +174,8 @@ Function {
 		// Load resistances
 		If (test == 0)
 			//Short circuit
-			Resistance[R_out~{i}] = 750*mili   ; 
+			// Resistance[R_out~{i}] = 750*mili   ; 
+			Resistance[R_out~{i}] = 0   ; 
 		ElseIf (test == 1)
 			//Open circuit  
 			Resistance[R_out~{i}] = 1e7        ; 
@@ -397,8 +400,12 @@ PostOperation {
 /****************************************Equivalent model files*****************************************************/ 
       If (test==0) //Short circuit
 
-      //  Print[ U, OnRegion Secondary_p_phase_1, Format Table, File > "../Results/TransformerModel/UShortCircuit.txt"];
-      //  Print[ I, OnRegion Secondary_p_phase_1, Format Table, File > "../Results/TransformerModel/IShortCircuit.txt"];
+		Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"   ];
+    	Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph1.txt"   ];
+    	Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph2.txt"   ];
+    	Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph2.txt"   ];
+    	Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph3.txt"   ];
+    	Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph3.txt"   ];
 
       ElseIf (test==1)
 
