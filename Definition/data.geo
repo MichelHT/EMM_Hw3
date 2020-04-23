@@ -112,7 +112,7 @@ H_Inductor1 = K_Ind1 * H_Hole;
 H_Inductor2 = K_Ind2 * H_Hole;
 
 //Boucherot formulation
-Thickness_Core    = Voltage_primary/4.44/Freq/Sqrt[2]/0.75/B_sat/Primary_Turns/W_Leg; //75% Bsat = marge de sécurité pour ne pas atteindre la saturation (AJUSTER CA)
+Thickness_Core    = Voltage_primary/4.44/Freq/Sqrt[2]/0.75/B_sat/Primary_Turns/W_Leg; 					//75% Bsat = marge de sécurité pour ne pas atteindre la saturation (AJUSTER CA)
 // thickness_Core = 1 ;//using this value for tests
 
 // Counter initilization
@@ -183,10 +183,20 @@ DefineConstant[
 
 
  /************************************ Print the dimensions computed automatically  ******************************************************/
-W_Hole_Print	 		 = DefineNumber[W_Hole       		 , Name StrCat[PathResultsUI ,"03Width of the holes in the core"], Highlight "Black"];
-Thickness_Core_Print	 = DefineNumber[Thickness_Core       , Name StrCat[PathResultsUI ,"04Thickness of the core"], Highlight "Black"];
-H_Inductor1_Print		 = DefineNumber[H_Inductor1          , Name StrCat[PathResultsUI ,"05Height of the primary inductors"], Highlight "Black"];
-H_Inductor2_Print		 = DefineNumber[H_Inductor2          , Name StrCat[PathResultsUI ,"06Height of the secondary inductors"], Highlight "Black"];
+ //Default value (easier to see in the gui)
+W_Hole_Print	 		 = DefineNumber[W_Hole       		 , Name StrCat[PathResultsUI ,"03Width of the holes in the core (Not Updated!!)"], Highlight "Black"];
+Thickness_Core_Print	 = DefineNumber[Thickness_Core       , Name StrCat[PathResultsUI ,"04Thickness of the core (Not Updated!!)"], Highlight "Black"];
+H_Inductor1_Print		 = DefineNumber[H_Inductor1          , Name StrCat[PathResultsUI ,"05Height of the primary inductors (Not Updated!!)"], Highlight "Black"];
+H_Inductor2_Print		 = DefineNumber[H_Inductor2          , Name StrCat[PathResultsUI ,"06Height of the secondary inductors (Not Updated!!)"], Highlight "Black"];
+
+//Current value (printed in the information window)
+Printf("");
+Printf(" /************************************ Automatically computed dimensions ******************************************************/");
+Printf("W_Hole: %f [m] ",W_Hole);
+Printf("Thickness_Core: %f [m] ",Thickness_Core);
+Printf("H_Inductor1: %f [m] ",H_Inductor1);
+Printf("H_Inductor2: %f [m]",H_Inductor2);
+Printf("");
 
 /************************************ Physical Tags ******************************************************/
 
@@ -210,3 +220,7 @@ Secondary_ph3_p = 1700;
 Secondary_ph1_m = 1800; 
 Secondary_ph2_m = 1900;
 Secondary_ph3_m = 2000;
+
+
+
+
