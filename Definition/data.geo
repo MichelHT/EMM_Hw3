@@ -38,7 +38,7 @@ DefineConstant[
  
 /************************************ Electrical definition ******************************************************/	
 DefineConstant[
-	type = { 0 , Name StrCat[PathElectricalParameters,"00type A or B?"], Highlight "Red", Visible 1,
+	type = { 1 , Name StrCat[PathElectricalParameters,"00type A or B?"], Highlight "Red", Visible 1,
 		Choices{
 			0 = " type A ",
 			1 = " type B "
@@ -70,9 +70,9 @@ DefineConstant[
 // User's input
 H_Leg        = DefineNumber[0.01        , Name StrCat[PathGeometricParameters ,"05Height of the leg "      ], Highlight "Grey"];
 W_Leg        = DefineNumber[0.01        , Name StrCat[PathGeometricParameters ,"06Width of the leg  "      ], Highlight "Grey"];
-W_Hole       = DefineNumber[0.25        , Name StrCat[PathGeometricParameters ,"07Width of the hole "      ], Highlight "Grey"];
-Air_Gap1     = DefineNumber[0.001       , Name StrCat[PathGeometricParameters ,"08Insulation gap 1         "      ], Highlight "Grey"];
-Air_Gap2     = DefineNumber[0.001       , Name StrCat[PathGeometricParameters ,"09Insulation gap 2       "      ], Highlight "Grey"];
+// W_Hole       = DefineNumber[0.25        , Name StrCat[PathGeometricParameters ,"07Width of the hole "      ], Highlight "Grey"];
+Air_Gap1     = DefineNumber[0.001       , Name StrCat[PathGeometricParameters ,"08Insulation gap betwen core and inductors         "      ], Highlight "Grey"];
+Air_Gap2     = DefineNumber[0.001       , Name StrCat[PathGeometricParameters ,"09Insulation gap between 2 coils       "      ], Highlight "Grey"];
 H_Hole       = DefineNumber[0.5         , Name StrCat[PathGeometricParameters ,"10Height of the hole"      ], Highlight "Grey"];
 K_Ind1       = DefineNumber[0.8     	, Name StrCat[PathGeometricParameters ,"11Inductor 1 height coefficient "      ], Highlight "Grey"];
 K_Ind2       = DefineNumber[0.8  	    , Name StrCat[PathGeometricParameters ,"12Inductor 2 height coefficient "      ], Highlight "Grey"];
@@ -116,9 +116,9 @@ W_Inductor1 = (Primary_Turns * N_Wire_per_Turn_Primary * A_Fil_primary)/(H_Induc
 W_Inductor2 = (Secondary_Turns * N_Wire_per_Turn_Secondary * A_Fil_Secondary)/(H_Inductor2);
 
 // If the width of the hole input by the user is not large enough to contain the inductors, it is enlarged automatically.
-If((Geo == 1) && (W_Hole < (W_Inductor1 + W_Inductor2 + Air_Gap1 + Air_Gap2 + Air_Gap1)))
+If((Geo == 1))
 	W_Hole = (W_Inductor1 + W_Inductor2 + Air_Gap1 + Air_Gap2 + Air_Gap1);
-ElseIf((Geo == 0) && (W_Hole < (2 * W_Inductor1 + 2 * W_Inductor2 + 2 * Air_Gap1 + 3 * Air_Gap2 )))
+ElseIf((Geo == 0))
 	W_Hole =  (2 * W_Inductor1 + 2 * W_Inductor2 + 2 * Air_Gap1 + 3  * Air_Gap2 );
 EndIf
 
