@@ -1,31 +1,5 @@
 Include "data.geo";
 
-muir_Core      = DefineNumber[1000  , Name StrCat[PathMaterialsParameters , "Relative permeability of the core"], Highlight "Yellow"]; //static permeability
-Snoek_constant = DefineNumber[4*giga, Name StrCat[PathMaterialsParameters , "Snoek constant"                   ], Highlight "Yellow"]; // [4,12]gigaHz
-Freq           = DefineNumber[50    , Name StrCat[PathElectricalParameters, "Operating frequency              "], Highlight "Red"   ];
-B_sat          = DefineNumber[1.8   , Name StrCat[PathElectricalParameters, "Saturation magnetic flux density [T]"], Highlight "Red"   ]; //varies with the magnetic material only defined for ferrites magnetic material
-
-DefineConstant[
-  Field_Card = { 0 , Name StrCat[PathElectricalParameters,"06Show field card?"], Highlight "Red", Visible 1,
-    Choices{
-      0 = "No ",
-      1 = "Yes "
-    } }];
-
-DefineConstant[
-  Flag_FrequencyDomain = {1 , Name StrCat[PathElectricalParameters,"07Frequency domain analysis?"], Highlight "Red", Visible 1,
-    Choices{
-      0 = "No ",
-      1 = "Yes "
-    } }];
-
-DefineConstant[
-  OverWriteOutput = {0, Name StrCat[PathResultsUI,"Overwrite output?"], Visible 1,
-    Choices{
-      0 = "No ",
-      1 = "Yes "
-    } }];
-
 Group {
 
 	// Physical regions
@@ -105,18 +79,9 @@ Function{
 		Sc[Secondary_m_phase~{i}] = SurfaceArea[];
 	EndFor
 
-	js0[Coils] = Ns[] / Sc[] * Vector[0, 0, SignBranch[]];
-
-  //Boucherot formulation
-
-  thickness_Core    = Voltage_primary/4.44/Freq/Sqrt[2]/0.75/B_sat/Primary_Turns/W_Leg; //75% Bsat = marge de sécurité pour ne pas atteindre la saturation
-  //ATTENTION, il faut toujours avoir W_Inductor2 == W_Inductor1
-  //erreur ici, je ne sais toujours comment faire pour débeuguer... any ideas?  
-  
-	// thickness_Core = 1 ;//using this value for tests
-	
-	CoefGeos[Coils] = SignBranch[] * thickness_Core; 
-	CoefGeos[Core]  = thickness_Core               ; 
+	js0[Coils] = Ns[] / Sc[] * Vector[0, 0, SignBranch[]];	
+	CoefGeos[Coils] = SignBranch[] * Thickness_Core; 
+	CoefGeos[Core]  = Thickness_Core               ; 
 }
 
 Flag_CircuitCoupling=1;
@@ -400,21 +365,25 @@ PostOperation {
 /****************************************Equivalent model files*****************************************************/ 
       If (test==0) //Short circuit
 
-		Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"   ];
-    	Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph1.txt"   ];
-    	Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph2.txt"   ];
-    	Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph2.txt"   ];
-    	Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph3.txt"   ];
-    	Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph3.txt"   ];
+		Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph1.txt"   ];
+    	Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph1.txt"   ];
+    	Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph2.txt"   ];
+    	Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph2.txt"   ];
+    	Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph3.txt"   ];
+    	Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph3.txt"   ];
 
-      ElseIf (test==1)
+      ElseIf (test==1) // Open circuit
 
-      //  Print[ U, OnRegion [{Primary_p_phase_1, R_in_1}], Format Table, File > "../Results/TransformerModel/UOpenCircuit.txt"];
-      //  Print[ I, OnRegion Primary_p_phase_1            , Format Table, File > "../Results/TransformerModel/IOpenCircuit.txt"];
+		Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph1.txt"   ];
+    	Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph1.txt"   ];
+    	Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph2.txt"   ];
+    	Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph2.txt"   ];
+    	Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph3.txt"   ];
+    	Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph3.txt"   ];
 
 /***************************************** Exterior characteristic files**************************************************/ 
 
-      ElseIf(test==2 )
+      ElseIf(test==2)
 
     		If (Phase != 90 && Phase != -90)
     			Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"   ];
