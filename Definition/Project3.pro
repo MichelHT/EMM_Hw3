@@ -1,11 +1,17 @@
+// Commin data
 Include "data.geo";
 
-
+/*********************** Definition of further parameter (whose modification do no require a new mesh generation)  *******************************************/
+Load_exponent  = DefineNumber[-3   , Name StrCat[PathElectricalParameters, "02Order of magnitude of the load expressed in Ohm"      ], Highlight "Red" , Visible test==2];
+Phase 		   = DefineNumber[0    , Name StrCat[PathElectricalParameters, "03Phase of the load connected to the secondary (in deg)"], Highlight "Red" , Visible test==2];
 muir_Core      = DefineNumber[1000  , Name StrCat[PathMaterialsParameters , "10Relative permeability of the core"   ], Highlight "Yellow"]; //static permeability
 B_sat          = DefineNumber[1.8   , Name StrCat[PathElectricalParameters, "11Saturation magnetic flux density [T]"], Highlight "Red"   ]; //varies with the magnetic material only defined for ferrites magnetic material
 Snoek_constant = DefineNumber[4*giga, Name StrCat[PathMaterialsParameters , "12Snoek constant"                      ], Highlight "Yellow"]; // [4,12]gigaHz
 Freq           = DefineNumber[50    , Name StrCat[PathElectricalParameters, "08Operating frequency              "   ], Highlight "Red", Visible Flag_FrequencyDomain ];
+//Boucherot formulation
+Thickness_Core    = Voltage_primary/4.44/Freq/Sqrt[2]/0.75/B_sat/Primary_Turns/W_Leg; //75% Bsat = marge de sécurité pour ne pas atteindre la saturation (AJUSTER CA)
 
+/************************************ Beginning of the .Pro file ******************************************************/
 Group {
 
 	// Physical regions
@@ -36,16 +42,16 @@ Group {
 	Vol_S_Mag   = Region[{Coils}]                    ; 
 	Vol_Inf_Mag = Region[{Air_Inf}]                  ; 
 	
-  Val_Rint = R_int ;  
-  Val_Rext = R_ext ; 
+	Val_Rint = R_int ;  
+	Val_Rext = R_ext ; 
 	
-  If(Laminated_Core==0)
+	If(Laminated_Core==0)
 		Vol_C_Mag = Region[{Core}];
 	EndIf
 }
 
 Function{
-  //the frequency dependant permeability (Debye model)
+  // The frequency dependant permeability (Debye model)
   relaxation_frequency = Snoek_constant/muir_Core   ;
   Omega                = 2*Pi*Freq                  ;
   tau                  = 1/2/Pi/relaxation_frequency;  
@@ -320,6 +326,21 @@ PostOperation {
 { Name Map_a; NameOfPostProcessing Magnetodynamics2D_av;
 
     Operation {
+		
+	/************************************ Print the dimensions computed automatically  ******************************************************/
+	//Default value (easier to see in the gui)
+	W_Hole_Print	 		 = DefineNumber[W_Hole       	, Name StrCat[PathResultsUI ,"03Width of the holes in the core (Not Updated!!)"], Highlight "Black"];
+	Thickness_Core_Print	 = DefineNumber[Thickness_Core  , Name StrCat[PathResultsUI ,"04Thickness of the core (Not Updated!!)"], Highlight "Black"];
+	H_Inductor1_Print		 = DefineNumber[H_Inductor1     , Name StrCat[PathResultsUI ,"05Height of the primary inductors (Not Updated!!)"], Highlight "Black"];
+	H_Inductor2_Print		 = DefineNumber[H_Inductor2     , Name StrCat[PathResultsUI ,"06Height of the secondary inductors (Not Updated!!)"], Highlight "Black"];
+	//Current value (printed in the information window)
+	Printf("");
+	Printf(" /************************************ Automatically computed dimensions ******************************************************/");
+	Printf("W_Hole: %f [m] ",W_Hole);
+	Printf("Thickness_Core: %f [m] ",Thickness_Core);
+	Printf("H_Inductor1: %f [m] ",H_Inductor1);
+	Printf("H_Inductor2: %f [m]",H_Inductor2);
+	Printf("");
 
     If (OverWriteOutput==1)
        If (test==0) //short circuit test
@@ -359,38 +380,58 @@ PostOperation {
         EndIf
       EndIf
 
-      //Do you want to see the field card?
+      // Do you want to see the field card?
 	If (Field_Card==1)
-         Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
-         Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
-         Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+        Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+        Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
+        Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
     EndIf 
 	  
     If (Flag_FrequencyDomain)      
 
-/****************************************Equivalent model files*****************************************************/ 
+	/****************************************Equivalent model files*****************************************************/ 
       If (test==0) //Short circuit
+			// Primary Measure
+			Print[ U, OnRegion V_pr_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph1.txt"   ];
+			Print[ U, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Rin_ph1.txt"   ];
+			Print[ I, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I1_Rin_ph1.txt"   ];
+			Print[ U, OnRegion V_pr_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph2.txt"   ];
+			Print[ U, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Rin_ph2.txt"   ];
+			Print[ I, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I1_Rin_ph2.txt"   ];
+			Print[ U, OnRegion V_pr_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph3.txt"   ];
+			Print[ U, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Rin_ph3.txt"   ];
+			Print[ I, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I1_Rin_ph3.txt"   ];
+		
+			// Secondary Measure
+			Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph1.txt"   ];
+			Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph1.txt"   ];
+			Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph2.txt"   ];
+			Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph2.txt"   ];
+			Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph3.txt"   ];
+			Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph3.txt"   ];
 
-		Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph1.txt"   ];
-    	Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph1.txt"   ];
-    	Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph2.txt"   ];
-    	Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph2.txt"   ];
-    	Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U2_Rout_ph3.txt"   ];
-    	Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I2_Rout_ph3.txt"   ];
+		ElseIf (test==1) // Open circuit
+			// Primary Measure
+			Print[ U, OnRegion V_pr_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph1.txt"   ];
+			Print[ U, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Rin_ph1.txt"   ];
+			Print[ I, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I1_Rin_ph1.txt"   ];
+			Print[ U, OnRegion V_pr_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph2.txt"   ];
+			Print[ U, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Rin_ph2.txt"   ];
+			Print[ I, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I1_Rin_ph2.txt"   ];
+			Print[ U, OnRegion V_pr_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph3.txt"   ];
+			Print[ U, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Rin_ph3.txt"   ];
+			Print[ I, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I1_Rin_ph3.txt"   ];
+		
+			// Sceondary Measure
+			Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph1.txt"   ];
+			Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph1.txt"   ];
+			Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph2.txt"   ];
+			Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph2.txt"   ];
+			Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph3.txt"   ];
+			Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph3.txt"   ];
 
-      ElseIf (test==1) // Open circuit
-
-		Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph1.txt"   ];
-    	Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph1.txt"   ];
-    	Print[ U, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph2.txt"   ];
-    	Print[ I, OnRegion R_out_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph2.txt"   ];
-    	Print[ U, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U2_Rout_ph3.txt"   ];
-    	Print[ I, OnRegion R_out_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I2_Rout_ph3.txt"   ];
-
-/***************************************** Exterior characteristic files**************************************************/ 
-
-      ElseIf(test==2)
-
+	/***************************************** Exterior characteristic files**************************************************/ 
+		ElseIf(test==2)
     		If (Phase != 90 && Phase != -90)
     			Print[ U, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"   ];
     			Print[ I, OnRegion R_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Rout_ph1.txt"   ];
