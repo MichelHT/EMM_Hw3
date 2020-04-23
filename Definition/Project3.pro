@@ -1,5 +1,11 @@
 Include "data.geo";
 
+
+muir_Core      = DefineNumber[1000  , Name StrCat[PathMaterialsParameters , "10Relative permeability of the core"   ], Highlight "Yellow"]; //static permeability
+B_sat          = DefineNumber[1.8   , Name StrCat[PathElectricalParameters, "11Saturation magnetic flux density [T]"], Highlight "Red"   ]; //varies with the magnetic material only defined for ferrites magnetic material
+Snoek_constant = DefineNumber[4*giga, Name StrCat[PathMaterialsParameters , "12Snoek constant"                      ], Highlight "Yellow"]; // [4,12]gigaHz
+Freq           = DefineNumber[50    , Name StrCat[PathElectricalParameters, "08Operating frequency              "   ], Highlight "Red", Visible Flag_FrequencyDomain ];
+
 Group {
 
 	// Physical regions
@@ -47,7 +53,7 @@ Function{
 	//Constant Permeability
 	mu[Core]   = Re[muir_Core*mu0/Complex[1,Omega*tau]];
 
-  mu[Air]    = 1 * mu0 ;
+    mu[Air]    = 1 * mu0 ;
 	mu[Air_Inf]= 1 * mu0 ;
 	mu[Coils]  = 1 * mu0 ;
 
@@ -68,8 +74,8 @@ Function{
 		SignBranch[Secondary_m_phase~{i}] = -1;
 	EndFor
 
-	Ns[Primary_coils]  = Primary_Turns              ;
-	Ns[Secondary_coils]= Secondary_Turns            ;
+	Ns[Primary_coils]  = Primary_Turns        ;
+	Ns[Secondary_coils]= Secondary_Turns      ;
 
 	//Defining the current density: 
 	For i In {1:3}
@@ -354,11 +360,11 @@ PostOperation {
       EndIf
 
       //Do you want to see the field card?
-		  If (Field_Card==1)
+	If (Field_Card==1)
          Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
          Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
          Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
-      EndIf 
+    EndIf 
 	  
     If (Flag_FrequencyDomain)      
 
@@ -412,7 +418,7 @@ PostOperation {
     				Print[ U, OnRegion C_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Cout_ph3.txt" ];  
     			EndIf
     		EndIf
-      EndIf
+        EndIf
     EndIf
     }
   }
