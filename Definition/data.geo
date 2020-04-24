@@ -89,8 +89,8 @@ EndIf
  
  /************************************ Geometrical parameters ******************************************************/
 // User's input
-H_Leg        = DefineNumber[0.01   , Name StrCat[PathGeometricParameters ,"05Height of the leg "                      ], Highlight "Grey"];
-W_Leg        = DefineNumber[0.01   , Name StrCat[PathGeometricParameters ,"06Width of the leg  "                      ], Highlight "Grey"];
+H_Leg        = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"05Height of the leg "                      ], Highlight "Grey"];
+W_Leg        = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"06Width of the leg  "                      ], Highlight "Grey"];
 Air_Gap1     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"08Insulation gap betwen core and inductors"], Highlight "Grey"];
 Air_Gap2     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"09Insulation gap between 2 inductors"      ], Highlight "Grey"];
 H_Hole       = DefineNumber[0.5    , Name StrCat[PathGeometricParameters ,"10Height of the hole"                      ], Highlight "Grey"];
