@@ -392,13 +392,13 @@ PostOperation {
 	/****************************************Equivalent model files*****************************************************/ 
       If (test==0) //Short circuit
 			// Primary Measure
-			Print[ U, OnRegion V_pr_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph1.txt"   ];
+			Print[ U, OnRegion Voltage_pr_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph1.txt"   ];
 			Print[ U, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Rin_ph1.txt"   ];
 			Print[ I, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I1_Rin_ph1.txt"   ];
-			Print[ U, OnRegion V_pr_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph2.txt"   ];
+			Print[ U, OnRegion Voltage_pr_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph2.txt"   ];
 			Print[ U, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Rin_ph2.txt"   ];
 			Print[ I, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I1_Rin_ph2.txt"   ];
-			Print[ U, OnRegion V_pr_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph3.txt"   ];
+			Print[ U, OnRegion Voltage_pr_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Vpr_ph3.txt"   ];
 			Print[ U, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_U1_Rin_ph3.txt"   ];
 			Print[ I, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/SC_I1_Rin_ph3.txt"   ];
 		
@@ -412,13 +412,13 @@ PostOperation {
 
 		ElseIf (test==1) // Open circuit
 			// Primary Measure
-			Print[ U, OnRegion V_pr_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph1.txt"   ];
+			Print[ U, OnRegion Voltage_pr_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph1.txt"   ];
 			Print[ U, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Rin_ph1.txt"   ];
 			Print[ I, OnRegion R_in_1, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I1_Rin_ph1.txt"   ];
-			Print[ U, OnRegion V_pr_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph2.txt"   ];
+			Print[ U, OnRegion Voltage_pr_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph2.txt"   ];
 			Print[ U, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Rin_ph2.txt"   ];
 			Print[ I, OnRegion R_in_2, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I1_Rin_ph2.txt"   ];
-			Print[ U, OnRegion V_pr_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph3.txt"   ];
+			Print[ U, OnRegion Voltage_pr_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Vpr_ph3.txt"   ];
 			Print[ U, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_U1_Rin_ph3.txt"   ];
 			Print[ I, OnRegion R_in_3, Format FrequencyTable, File > "../Results/Equivalent_Circuit_Test/OC_I1_Rin_ph3.txt"   ];
 		
