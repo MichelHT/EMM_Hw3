@@ -84,7 +84,7 @@ K_Ind2       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"12Ind
 Air_Gap3     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"13Air gap in the core"                     ], Highlight "Grey", Visible Core_Air_Gap];
 W_Centre     = DefineNumber[0.2   , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "  ], Highlight "Grey", Visible Geo];
 H_Centre     = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"  ], Highlight "Grey", Visible Geo];
-r_corner	 = DefineNumber[0.005  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
+r_corner	 = DefineNumber[0.01  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
 
 // Useful computation
 H_Inductor1 = K_Ind1 * H_Hole;
