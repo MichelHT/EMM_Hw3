@@ -19,14 +19,6 @@ DefineConstant[
 			0 = " type A ",
 			1 = " type B "
     } }];
-	
-DefineConstant[
-    test = { 0 , Name StrCat[PathElectricalParameters,"01Load connected to the secondary"], Highlight "Red", Visible 1,
-		Choices{
-			0 = "Short circuit",
-			1 = "Open Circuit",
-			2 = "Define your load"
-    } }];
 
 DefineConstant[
     Prim_connection = { 0 , Name StrCat[PathElectricalParameters,"04Primary windings connection"], Highlight "Red", Visible 1,
@@ -64,13 +56,6 @@ DefineConstant[
 			0 = "No",
 			1 = "Yes"
     } }];
-	
-DefineConstant[
-	Laminated_Core = { 1 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
-		Choices{
-			0 = "No",
-			1 = "Yes"
-    } }];
  	
 /************************************ Electrical parameters ******************************************************/
 //User's input
@@ -99,7 +84,7 @@ K_Ind2       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"12Ind
 Air_Gap3     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"13Air gap in the core"                     ], Highlight "Grey", Visible Core_Air_Gap];
 W_Centre     = DefineNumber[0.02   , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "  ], Highlight "Grey", Visible Geo];
 H_Centre     = DefineNumber[0.01   , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"  ], Highlight "Grey", Visible Geo];
-r_corner	 = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
+r_corner	 = DefineNumber[0.005  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
 
 // Useful computation
 H_Inductor1 = K_Ind1 * H_Hole;
@@ -144,7 +129,7 @@ EndIf
 
 /************************************ Mesh parameters ******************************************************/
 
-lc_Holes_Param      = DefineNumber[10 , Name StrCat[PathMeshParameters, "01Internal corners of the core "], Highlight "LightBlue1"];
+lc_Holes_Param      = DefineNumber[30 , Name StrCat[PathMeshParameters, "01Internal corners of the core "], Highlight "LightBlue1"];
 lc_Holes  			= (2*Pi*r_corner)/lc_Holes_Param;
 
 lc_Air_Param        = DefineNumber[50  , Name StrCat[PathMeshParameters, "02Away from the transformer    "], Highlight "LightBlue1"];

@@ -2,6 +2,19 @@
 Include "data.geo";
 
 /*********************** Definition of further parameter (whose modification do no require a new mesh generation)  *******************************************/
+DefineConstant[
+    test = { 0 , Name StrCat[PathElectricalParameters,"01Load connected to the secondary"], Highlight "Red", Visible 1,
+		Choices{
+			0 = "Short circuit",
+			1 = "Open Circuit",
+			2 = "Define your load"
+    } }];
+DefineConstant[
+	Laminated_Core = { 1 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
+		Choices{
+			0 = "No",
+			1 = "Yes"
+    } }];
 Load_exponent  = DefineNumber[-3   , Name StrCat[PathElectricalParameters, "02Order of magnitude of the load expressed in Ohm"      ], Highlight "Red" , Visible test==2];
 Phase 		   = DefineNumber[0    , Name StrCat[PathElectricalParameters, "03Phase of the load connected to the secondary (in deg)"], Highlight "Red" , Visible test==2];
 muir_Core      = DefineNumber[1000  , Name StrCat[PathMaterialsParameters , "10Relative permeability of the core"   ], Highlight "Yellow"]; //static permeability
