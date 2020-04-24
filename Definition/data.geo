@@ -129,16 +129,16 @@ EndIf
 
 /************************************ Mesh parameters ******************************************************/
 
-lc_Holes_Param      = DefineNumber[30 , Name StrCat[PathMeshParameters, "01Internal corners of the core "], Highlight "LightBlue1"];
+lc_Holes_Param      = DefineNumber[15 , Name StrCat[PathMeshParameters, "01Internal corners of the core "], Highlight "LightBlue1"];
 lc_Holes  			= (2*Pi*r_corner)/lc_Holes_Param;
 
 lc_Air_Param        = DefineNumber[50  , Name StrCat[PathMeshParameters, "02Away from the transformer    "], Highlight "LightBlue1"];
 lc_Air              = (2*Pi*R_int)/lc_Air_Param;
 
-lc_Windings_Param	= DefineNumber[50 , Name StrCat[PathMeshParameters, "02Windings                     "], Highlight "LightBlue1"];
-lc_Windings			= (H_Inductor2+W_Inductor2)/(2*lc_Windings_Param);
+lc_Windings_Param	= DefineNumber[2 , Name StrCat[PathMeshParameters, "02Windings                     "], Highlight "LightBlue1"];
+lc_Windings			= (Air_Gap1)/(lc_Windings_Param);
 
-lc_Core_Corner_Param= DefineNumber[200 , Name StrCat[PathMeshParameters, "02External corners of the core "], Highlight "LightBlue1"];
+lc_Core_Corner_Param= DefineNumber[50 , Name StrCat[PathMeshParameters, "02External corners of the core "], Highlight "LightBlue1"];
 lc_Core_Corner      = (2*W_Hole+3*W_Leg)/lc_Core_Corner_Param;
 
 /************************************ Output files ******************************************************/

@@ -76,14 +76,32 @@ Else
 	Y_Rectangle =  H_Hole*0.5;
 	H_Rectangle = H_Leg;
 	Num_Surf = Num_Surf +1;
+	lc_Rectangle = lc_Core_Corner;
+	Call Create_Rectangle;
+
+	X_Rectangle = -(W_Hole + W_Leg*0.5);		// Remove the rounded corners
+	W_Rectangle = W_Hole;
+	Y_Rectangle =  H_Hole*0.5 - r_corner;
+	H_Rectangle = r_corner;
+	Num_Surf = Num_Surf +1;
+	lc_Rectangle = lc_Core_Corner;
 	Call Create_Rectangle;	
-	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Surface{Num_Surf}; Delete;};  // Creation of a E-shape core for the three phases.
+	X_Rectangle = (W_Leg*0.5);
+	W_Rectangle = W_Hole;
+	Y_Rectangle =  H_Hole*0.5 - r_corner;
+	H_Rectangle = r_corner;
+	Num_Surf = Num_Surf +1;
+	lc_Rectangle = lc_Core_Corner;
+	Call Create_Rectangle;
+	
+	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Surface{Num_Surf-2}; Surface{Num_Surf-1}; Surface{Num_Surf}; Delete;};  // Creation of a E-shape core for the three phases.
 	
 	X_Rectangle = -(W_Leg + W_Hole + W_Leg*0.5);
 	W_Rectangle = (W_Leg + W_Hole + W_Leg*0.5)*2;
 	Y_Rectangle =  H_Hole*0.5 + Air_Gap3;
 	H_Rectangle = H_Leg;
 	Num_Surf = Num_Surf +1;
+	lc_Rectangle = lc_Core_Corner;
 	Call Create_Rectangle;																						 // Creation of a I-shape core which closes the magnetic circuit.
 	Surf_Core() += Num_Surf;							
 	

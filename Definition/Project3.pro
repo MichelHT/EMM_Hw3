@@ -395,9 +395,9 @@ PostOperation {
 
       // Do you want to see the field card?
 	If (Field_Card==1)
-        Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+        // Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
         Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
-        Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+        // Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
     EndIf 
 	  
     If (Flag_FrequencyDomain)      
