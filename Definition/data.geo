@@ -82,8 +82,8 @@ H_Hole       = DefineNumber[0.5    , Name StrCat[PathGeometricParameters ,"10Hei
 K_Ind1       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"11Inductor 1 height coefficient "          ], Highlight "Grey"];
 K_Ind2       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"12Inductor 2 height coefficient "          ], Highlight "Grey"];
 Air_Gap3     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"13Air gap in the core"                     ], Highlight "Grey", Visible Core_Air_Gap];
-W_Centre     = DefineNumber[0.02   , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "  ], Highlight "Grey", Visible Geo];
-H_Centre     = DefineNumber[0.01   , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"  ], Highlight "Grey", Visible Geo];
+W_Centre     = DefineNumber[0.2   , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "  ], Highlight "Grey", Visible Geo];
+H_Centre     = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"  ], Highlight "Grey", Visible Geo];
 r_corner	 = DefineNumber[0.005  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
 
 // Useful computation
