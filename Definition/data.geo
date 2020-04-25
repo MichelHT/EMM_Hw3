@@ -89,7 +89,7 @@ H_Hole       = DefineNumber[0.5    , Name StrCat[PathGeometricParameters ,"10Hei
 K_Ind1       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"11Inductor 1 height coefficient "          ], Highlight "Grey"];
 K_Ind2       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"12Inductor 2 height coefficient "          ], Highlight "Grey"];
 Air_Gap3     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"13Air gap in the core"                     ], Highlight "Grey", Visible Core_Air_Gap];
-W_Centre     = DefineNumber[0.2   , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "  ], Highlight "Grey", Visible Geo];
+W_Centre     = DefineNumber[0.2   , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "  ], Highlight "Grey", Visible 1];
 H_Centre     = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"  ], Highlight "Grey", Visible Geo];
 r_corner	 = DefineNumber[0.01  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
 
@@ -130,8 +130,8 @@ If (Geo == 1)
 	R_int  = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*1.5;		 
 	R_ext = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*1.7;
 Else
-	R_int  = Sqrt[((W_Leg*1.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 +(Air_Gap3*Core_Air_Gap)*0.5))^2]*1.5;								 
-	R_ext = Sqrt[((W_Leg + 1.5*W_Hole) + (W_Leg))^2+((H_Leg + H_Hole*0.5 + (Air_Gap3*Core_Air_Gap)*0.5))^2]*1.7;
+	R_int  = Sqrt[((W_Leg + W_Centre*0.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 +(Air_Gap3*Core_Air_Gap)*0.5))^2]*1.5;								 
+	R_ext = Sqrt[((W_Leg + W_Centre*0.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 + (Air_Gap3*Core_Air_Gap)*0.5))^2]*1.7;
 EndIf
 
 /************************************ Mesh parameters ******************************************************/
@@ -145,8 +145,14 @@ lc_Air              = (2*Pi*R_int)/lc_Air_Param;
 lc_Windings_Param	= DefineNumber[2 , Name StrCat[PathMeshParameters, "02Windings                     "], Highlight "LightBlue1"];
 lc_Windings			= (Air_Gap1)/(lc_Windings_Param);
 
-lc_Core_Corner_Param= DefineNumber[50 , Name StrCat[PathMeshParameters, "02External corners of the core "], Highlight "LightBlue1"];
-lc_Core_Corner      = (2*W_Hole+3*W_Leg)/lc_Core_Corner_Param;
+lc_Core_Corner_Param= DefineNumber[100 , Name StrCat[PathMeshParameters, "02External corners of the core "], Highlight "LightBlue1"];
+If (Geo == 1)	
+	lc_Core_Corner      = 2*(2*W_Hole + 2*W_Leg + W_Centre + 3*H_Hole + 2*H_Leg + 2H_Centre)/lc_Core_Corner_Param;
+Else
+	lc_Core_Corner      = 2*(2*W_Hole + 2*W_Leg + W_Centre + H_Hole + 2*H_Leg)/lc_Core_Corner_Param;
+EndIf
+
+
 
 /************************************ Output files ******************************************************/
 DefineConstant[

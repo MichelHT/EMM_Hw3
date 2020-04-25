@@ -1,15 +1,15 @@
 /********************* Creation of the core type geometry *********************/
 
 // Core of the transformer.
-X_Rectangle = -(W_Leg + W_Hole + W_Leg*0.5);
-W_Rectangle = (W_Leg + W_Hole + W_Leg*0.5)*2;
+X_Rectangle = -(W_Leg + W_Hole + W_Centre*0.5) ;
+W_Rectangle = (W_Leg + W_Hole + W_Centre*0.5)*2;
 Y_Rectangle = -(H_Leg + H_Hole*0.5);
 H_Rectangle = (H_Leg + H_Hole*0.5)*2;
 lc_Rectangle = lc_Core_Corner;
 Call Create_Rectangle;
 
 // Holes in the core.
-X_Rectangle = X_Rectangle + W_Leg;
+X_Rectangle = -(W_Hole + W_Centre*0.5);
 W_Rectangle = W_Hole;
 Y_Rectangle = Y_Rectangle + H_Leg;
 H_Rectangle = H_Hole;
@@ -18,11 +18,11 @@ For i In {1:2}
 	Num_Surf = Num_Surf + 1;
 	Call Create_Round_Rectangle;
 	Surf_Holes() += {Num_Surf};
-	X_Rectangle = X_Rectangle + W_Hole + W_Leg;	
+	X_Rectangle = X_Rectangle + W_Hole + W_Centre;	
 EndFor
 
 // Primary windings.
-X_Rectangle = - (W_Hole + W_Leg*1.5 + W_Inductor1 + Air_Gap1);
+X_Rectangle = - (W_Hole + W_Centre*1.5 + W_Inductor1 + Air_Gap1);
 W_Rectangle = W_Inductor1;
 Y_Rectangle = -(H_Hole*0.5) + (H_Hole - H_Inductor1)/2;
 H_Rectangle = H_Inductor1;
@@ -32,13 +32,13 @@ For j In {1:2}
 		Num_Surf = Num_Surf + 1;
 		Call Create_Rectangle;
 		Surf_Inductors() += {Num_Surf};
-		X_Rectangle = X_Rectangle + W_Leg + W_Hole;		
+		X_Rectangle = X_Rectangle + W_Centre + W_Hole;		
 	EndFor
-	X_Rectangle = X_Rectangle - 3*(W_Leg + W_Hole) + W_Inductor1 + W_Leg + 2*Air_Gap1;
+	X_Rectangle = X_Rectangle - 3*(W_Centre + W_Hole) + W_Inductor1 + W_Centre + 2*Air_Gap1;
 EndFor
 
 // Secondary windings.
-X_Rectangle = - (W_Hole + W_Leg*1.5 + W_Inductor1 + Air_Gap1 + W_Inductor2 + Air_Gap2);
+X_Rectangle = - (W_Hole + W_Centre*1.5 + W_Inductor1 + Air_Gap1 + W_Inductor2 + Air_Gap2);
 W_Rectangle = W_Inductor2;
 Y_Rectangle = -(H_Hole*0.5) + (H_Hole - H_Inductor1)/2;
 H_Rectangle = H_Inductor2;
@@ -47,10 +47,15 @@ For j In {1:2}
 		Num_Surf = Num_Surf + 1;
 		Call Create_Rectangle;
 		Surf_Inductors() += {Num_Surf};
-		X_Rectangle = X_Rectangle + W_Leg + W_Hole;			
+		X_Rectangle = X_Rectangle + W_Centre + W_Hole;			
 	EndFor
-	X_Rectangle = X_Rectangle - 3*(W_Leg + W_Hole) + W_Leg + 2*W_Inductor1 + 2*Air_Gap1 + W_Inductor2 + 2*Air_Gap2;
+	X_Rectangle = X_Rectangle - 3*(W_Centre + W_Hole) + W_Centre + 2*W_Inductor1 + 2*Air_Gap1 + W_Inductor2 + 2*Air_Gap2;
 EndFor
+
+// Replace the external inductors at the right place (they have been misplaced because W_Centre != W_Leg)
+Translate {(W_Centre - W_Leg), 0 , 0} { Surface{Surf_Inductors(0)}; Surface{Surf_Inductors(6)}; } 
+Translate {-(W_Centre - W_Leg), 0 , 0} { Surface{Surf_Inductors(5)}; Surface{Surf_Inductors(11)}; } 
+
 
 // External domain circle.
 X_Circle = 0;
@@ -71,22 +76,22 @@ Call Create_Circle;
 If(Core_Air_Gap == 0)	
 	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Delete;}; // CORE
 Else
-	X_Rectangle = -(W_Leg + W_Hole + W_Leg*0.5);
-	W_Rectangle = (W_Leg + W_Hole + W_Leg*0.5)*2;
+	X_Rectangle = -(W_Centre + W_Hole + W_Centre*0.5);
+	W_Rectangle = (W_Centre + W_Hole + W_Centre*0.5)*2;
 	Y_Rectangle =  H_Hole*0.5;
 	H_Rectangle = H_Leg;
 	Num_Surf = Num_Surf +1;
 	lc_Rectangle = lc_Core_Corner;
 	Call Create_Rectangle;
 
-	X_Rectangle = -(W_Hole + W_Leg*0.5);		// Remove the rounded corners
+	X_Rectangle = -(W_Hole + W_Centre*0.5);		// Remove the rounded corners
 	W_Rectangle = W_Hole;
 	Y_Rectangle =  H_Hole*0.5 - r_corner;
 	H_Rectangle = r_corner;
 	Num_Surf = Num_Surf +1;
 	lc_Rectangle = lc_Core_Corner;
 	Call Create_Rectangle;	
-	X_Rectangle = (W_Leg*0.5);
+	X_Rectangle = (W_Centre*0.5);
 	W_Rectangle = W_Hole;
 	Y_Rectangle =  H_Hole*0.5 - r_corner;
 	H_Rectangle = r_corner;
@@ -96,8 +101,8 @@ Else
 	
 	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Surface{Num_Surf-2}; Surface{Num_Surf-1}; Surface{Num_Surf}; Delete;};  // Creation of a E-shape core for the three phases.
 	
-	X_Rectangle = -(W_Leg + W_Hole + W_Leg*0.5);
-	W_Rectangle = (W_Leg + W_Hole + W_Leg*0.5)*2;
+	X_Rectangle = -(W_Centre + W_Hole + W_Centre*0.5);
+	W_Rectangle = (W_Centre + W_Hole + W_Centre*0.5)*2;
 	Y_Rectangle =  H_Hole*0.5 + Air_Gap3;
 	H_Rectangle = H_Leg;
 	Num_Surf = Num_Surf +1;
