@@ -24,7 +24,7 @@ B_sat          = DefineNumber[1.8   , Name StrCat[PathElectricalParameters, "11S
 Snoek_constant = DefineNumber[4*giga, Name StrCat[PathMaterialsParameters , "12Snoek constant"                      ], Highlight "Yellow"]; // [4,12]gigaHz
 Freq           = DefineNumber[50    , Name StrCat[PathElectricalParameters, "08Operating frequency              "   ], Highlight "Red", Visible Flag_FrequencyDomain ];
 //Boucherot formulation
-Thickness_Core    = (Voltage_primary)/((2*Pi)/(Sqrt[2]))/Freq/0.75/B_sat/Primary_Turns/W_Leg; //75% Bsat = marge de sécurité pour ne pas atteindre la saturation (AJUSTER CA)
+Thickness_Core    = ((Voltage_primary)/((2*Pi)/(Sqrt[2]))/Freq/B_sat/Primary_Turns/W_Ref)*(2.9/B_sat); // The value 2.9 has been manually adjusted so that the maximum flux density reached at the rounded corner of the core is equal to B_sat
 
 /************************************ Beginning of the .Pro file ******************************************************/
 Group {
