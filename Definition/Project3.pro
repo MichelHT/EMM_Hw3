@@ -9,6 +9,8 @@ DefineConstant[
 			1 = "Open Circuit",
 			2 = "Define your load"
     } }];
+	
+
 DefineConstant[
 	Laminated_Core = { 1 , Name StrCat[PathGeometricParameters,"02Is the core laminated?"], Highlight "Green", Visible 1,
 		Choices{

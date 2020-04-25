@@ -40,7 +40,14 @@ DefineConstant[
       0 = "No ",
       1 = "Yes "
     } }];
+	
 
+DefineConstant[
+	Phase2_Connection = { 0 , Name StrCat[PathElectricalParameters,"08Way of connecting the second inductor"], Highlight "Red", Visible 1,
+		Choices{
+			0 = "Default direction",
+			1 = "Reverse directon"
+    } }];
 /************************************ Geometry definition ******************************************************/    
 
 DefineConstant[
