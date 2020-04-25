@@ -81,25 +81,20 @@ EndIf
  
  /************************************ Geometrical parameters ******************************************************/
 // User's input
-// H_Leg        = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"05Height of the leg "                      ], Highlight "Grey"];
-// W_Leg        = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"06Width of the leg  "                      ], Highlight "Grey"];
-W_Ref        = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"06Reference width of the core "                      ], Highlight "Grey"];
-
+W_Ref        = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"06Reference width of the core "                      ], Highlight "Grey"];	// We use this reference with in the Boucherot formulation, the width of all the part of the core are relative to W_ref
 Air_Gap1     = DefineNumber[0.002  , Name StrCat[PathGeometricParameters ,"08Insulation gap betwen core and inductors"], Highlight "Grey"];
 Air_Gap2     = DefineNumber[0.002  , Name StrCat[PathGeometricParameters ,"09Insulation gap between 2 inductors"      ], Highlight "Grey"];
 H_Hole       = DefineNumber[0.5    , Name StrCat[PathGeometricParameters ,"10Height of the hole"                      ], Highlight "Grey"];
 K_Ind1       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"11Inductor 1 height coefficient "          ], Highlight "Grey"];
 K_Ind2       = DefineNumber[0.8    , Name StrCat[PathGeometricParameters ,"12Inductor 2 height coefficient "          ], Highlight "Grey"];
 Air_Gap3     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"13Air gap in the core"                     ], Highlight "Grey", Visible Core_Air_Gap];
-// W_Centre     = DefineNumber[0.2   , Name StrCat[PathGeometricParameters ,"14Width of the central part of the core "  ], Highlight "Grey", Visible 1];
-// H_Centre     = DefineNumber[0.1   , Name StrCat[PathGeometricParameters ,"15Height of the central part of the core"  ], Highlight "Grey", Visible Geo];
 r_corner	 = DefineNumber[0.01  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
 
 // Useful computation
 H_Inductor1 = K_Ind1 * H_Hole;
 H_Inductor2 = K_Ind2 * H_Hole;
 
-If((Geo == 1))
+If((Geo == 1))	// The computation of the width of a particular part of the core, is based on a rough estimation of the magnetic flux circulating in that part
 	H_Leg = 0.5 * W_Ref;
 	W_Leg = 0.5 * W_Ref;
 	H_Centre = 0.5 * W_Ref;
