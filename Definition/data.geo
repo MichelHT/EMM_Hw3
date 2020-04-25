@@ -63,12 +63,12 @@ Primary_Turns  = DefineNumber[100  , Name StrCat[PathElectricalParameters, "09Nu
 
 // Definition of in the statement
 If (type == 0) 
-	Voltage_primary  = 2.4*kilo ;
-	Voltage_secondary= 240      ;	
+	Voltage_primary  = (2.4*kilo)/Sqrt[3] ;
+	Voltage_secondary= (240)/Sqrt[3]       ;	
 	Nominal_S        = 200*kilo ;
 Else
-	Voltage_primary  = 60*kilo  ;
-	Voltage_secondary= 2.4*kilo ;
+	Voltage_primary  = (60*kilo)/Sqrt[3]   ;
+	Voltage_secondary= (2.4*kilo)/Sqrt[3]  ;
 	Nominal_S        = 20*kilo  ;
 EndIf
  
