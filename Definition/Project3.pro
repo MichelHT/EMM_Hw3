@@ -359,17 +359,6 @@ PostOperation {
     Operation {
 		
 	/************************************ Print the dimensions computed automatically  ******************************************************/
-	// Default value (easier to see in the gui). If the user perfom a modification the value in the GUI are not updated, but the actual values are plotted in the information window.
-	W_Hole_Print	 		 = DefineNumber[W_Hole         , Name StrCat[PathResultsUI ,"03Width of the holes in the core (Not Updated!!)"   ], Highlight "Black"];
-	W_Leg_Print	 		     = DefineNumber[W_Leg       	, Name StrCat[PathResultsUI ,"04Width of the external vertical part of the core (Not Updated!!)"], Highlight "Black"];
-	W_Centre_Print	 		 = DefineNumber[W_Centre       	, Name StrCat[PathResultsUI ,"05Width of the central vertical part of the core (Not Updated!!)"], Highlight "Black"];
-	H_Leg_Print	 		     = DefineNumber[H_Leg       	, Name StrCat[PathResultsUI ,"06Width of the external horizontal part of the core (Not Updated!!)"], Highlight "Black"];
-	If (Geo == 1)	
-		H_Centre_Print	 	 = DefineNumber[H_Centre       	, Name StrCat[PathResultsUI ,"07Width of the central horizontal part of the core (Not Updated!!)"], Highlight "Black"];	
-	EndIf
-	Thickness_Core_Print	 = DefineNumber[Thickness_Core , Name StrCat[PathResultsUI ,"04Thickness of the core (Not Updated!!)"            ], Highlight "Black"];
-	H_Inductor1_Print		 = DefineNumber[H_Inductor1    , Name StrCat[PathResultsUI ,"05Height of the primary inductors (Not Updated!!)"  ], Highlight "Black"];
-	H_Inductor2_Print		 = DefineNumber[H_Inductor2    , Name StrCat[PathResultsUI ,"06Height of the secondary inductors (Not Updated!!)"], Highlight "Black"];
 	//Current value (printed in the information window)
 	Printf("");
 	Printf(" /************************************ Automatically computed dimensions ******************************************************/");
