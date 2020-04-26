@@ -136,10 +136,15 @@ Else
 	
 	Translate {0, -Air_Gap3*0.5, 0} { Surface{20}; Surface{21}; } 																		// Centering of the domain.
 EndIf
-BooleanDifference{ Surface{20}; Delete; }{ Surface{21}; }																				// AIR INF
+
+jj()= BooleanDifference{ Surface{20}; Delete; }{ Surface{21}; };																				// AIR INF
 s() = BooleanDifference{ Surface{21}; Delete; }{ Surface{Surf_Core()}; Surface{Surf_Inductors()}; };									// AIR
 
-
+If (Add_shield==1)
+	Delete{Surface{jj()} ;}
+	Delete{Line{133:136} ;}
+	Delete{Point{139:142};}
+EndIf
 
 
 
