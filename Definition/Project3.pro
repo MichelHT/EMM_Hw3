@@ -479,9 +479,9 @@ PostOperation {
     			Print[ U, OnRegion L_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Lout_ph2.txt"];
     			Print[ U, OnRegion L_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/U2_Lout_ph3.txt"];
     			If(Phase == 90)
-    				Print[ I, OnRegion L_out_1, Format FrequencyTable, File > "../Results//ExteriorCharacteristic/I2_Lout_ph1.txt"];
-    				Print[ I, OnRegion L_out_2, Format FrequencyTable, File > "../Results//ExteriorCharacteristic/I2_Lout_ph2.txt"];
-    				Print[ I, OnRegion L_out_3, Format FrequencyTable, File > "../Results//ExteriorCharacteristic/I2_Lout_ph3.txt"]; 
+    				Print[ I, OnRegion L_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Lout_ph1.txt"];
+    				Print[ I, OnRegion L_out_2, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Lout_ph2.txt"];
+    				Print[ I, OnRegion L_out_3, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Lout_ph3.txt"]; 
     			EndIf
     		ElseIf(Phase < 0)
     			Print[ I, OnRegion C_out_1, Format FrequencyTable, File > "../Results/ExteriorCharacteristic/I2_Cout_ph1.txt"];
