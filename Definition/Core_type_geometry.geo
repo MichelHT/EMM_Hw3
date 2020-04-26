@@ -62,7 +62,6 @@ X_Circle = 0;
 Y_Circle = 0;
 R_Circle = R_ext;
 Num_Surf = Num_Surf +1;
-lc_Circle = lc_Air;
 Call Create_Circle;
 
 // Internal domain circle. 
@@ -112,9 +111,15 @@ Else
 	
 	Translate {0, Air_Gap3*0.5, 0} { Surface{16}; Surface{17}; } 												 // Centering of the domain.
 EndIf
-BooleanDifference{ Surface{16}; Delete; }{ Surface{17}; }				  										 // AIR INF
+
+jj()=BooleanDifference{ Surface{16}; Delete; }{ Surface{17}; };				  										 // AIR INF
 s() = BooleanDifference{ Surface{17}; Delete; }{ Surface{Surf_Core()}; Surface{Surf_Inductors()}; };		 	 // AIR
 
+If (Add_shield==1)
+	Delete{Surface{jj()} ;}
+	Delete{Line{112:115} ;}
+	Delete{Point{107:110};}
+EndIf
 
 
 
