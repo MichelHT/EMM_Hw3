@@ -12,6 +12,30 @@ mega = 1e6      ;
 giga = 1e9      ;
 mu0  = 4*Pi*1e-7;
 
+
+/************************************ Geometry definition ******************************************************/    
+
+DefineConstant[
+	Geo = { 0 , Name StrCat[PathGeometricParameters,"00Which Transfo type ?"], Highlight "Green", Visible 1,
+		Choices{
+			0 = "Core type",
+			1 = "Shell type"
+    } }];
+
+DefineConstant[
+	Core_Air_Gap = { 0 , Name StrCat[PathGeometricParameters,"01Air gap in the core?"], Highlight "Green", Visible 1,
+		Choices{
+			0 = "No",
+			1 = "Yes"
+    } }];
+
+DefineConstant[
+	Add_shield = { 0 , Name StrCat[PathGeometricParameters,"02Is shield_tank surrounding the transformer?"], Highlight "Green", Visible 1,
+		Choices{
+			0 = "No",
+			1 = "Yes"
+   } }];
+
 /************************************ Electrical definition ******************************************************/	
 DefineConstant[
 	type = { 1 , Name StrCat[PathElectricalParameters,"00type A or B?"], Highlight "Red", Visible 1,
@@ -43,25 +67,10 @@ DefineConstant[
 	
 
 DefineConstant[
-	Phase2_Connection = { 0 , Name StrCat[PathElectricalParameters,"08Way of connecting the second inductor"], Highlight "Red", Visible 1,
+	Phase2_Connection = { 0 , Name StrCat[PathElectricalParameters,"08Way of connecting the second inductor"], Highlight "Red", Visible (Geo==1),
 		Choices{
 			0 = "Default direction",
 			1 = "Reverse directon"
-    } }];
-/************************************ Geometry definition ******************************************************/    
-
-DefineConstant[
-	Geo = { 0 , Name StrCat[PathGeometricParameters,"00Which Transfo type ?"], Highlight "Green", Visible 1,
-		Choices{
-			0 = "Core type",
-			1 = "Shell type"
-    } }];
-
-DefineConstant[
-	Core_Air_Gap = { 0 , Name StrCat[PathGeometricParameters,"01Air gap in the core?"], Highlight "Green", Visible 1,
-		Choices{
-			0 = "No",
-			1 = "Yes"
     } }];
  	
 /************************************ Electrical parameters ******************************************************/
@@ -149,6 +158,7 @@ lc_Holes  			= (2*Pi*r_corner)/lc_Holes_Param;
 
 lc_Air_Param        = DefineNumber[50  , Name StrCat[PathMeshParameters, "02Away from the transformer    "], Highlight "LightBlue1"];
 lc_Air              = (2*Pi*R_int)/lc_Air_Param;
+lc_Circle           = lc_Air; 
 
 lc_Windings_Param	= DefineNumber[2 , Name StrCat[PathMeshParameters, "02Windings                     "], Highlight "LightBlue1"];
 lc_Windings			= (Air_Gap1)/(lc_Windings_Param);
@@ -180,9 +190,11 @@ DefineConstant[
 /************************************ Physical Tags ******************************************************/
 
 Skin_airInf     = 400 ; 
-Air_ext         = 500 ;
-AirInf          = 600 ;
-Core            = 700 ;
+Skin_air        = 500 ;
+Air_ext         = 600 ;
+AirInf          = 700 ;
+Core            = 800 ;
+
 
 Primary_ph1_p   = 900 ;
 Primary_ph2_p   = 1000;
