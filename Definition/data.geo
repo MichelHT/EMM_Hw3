@@ -121,13 +121,13 @@ Num_Surf = 1 ;
 If (type == 0) 
 	N_Wire_per_Turn_Primary   = 1;		// Not useful here 1 turn is made up of 1 wire 
 	N_Wire_per_Turn_Secondary = 1;		// Not useful here 1 turn is made up of 1 wire 
-	A_Fil_primary   = 5.26 *mili*mili;	// "AWG10" cables: Sustain up to 35 [A] at 90° (Primary nominal current = 27.7 [A] --> Ok!)
-	A_Fil_Secondary = 126.7*mili*mili;	// "250MCM" Cables Sustain up to 290 [A] at 90° (Secondary nominal current = 277.7 [A] --> Ok!)
+	A_Fil_primary   = 13.3 *mili*mili;	// "AWG6" cables: Sustain up to 55 [A] at 90° (Primary nominal current = 47.98 [A] --> Ok!)
+	A_Fil_Secondary = 354.7*mili*mili;	// "700MCM" Cables Sustain up to 520 [A] at 90° (Secondary nominal current = 479.8 [A] --> Ok!)
 Else
 	N_Wire_per_Turn_Primary = 1;	    // Not useful here 1 turn is made up of 1 wire 
-	N_Wire_per_Turn_Secondary = 5;	    // Here 1 turn of cable is made up of 5 wires in parallel
-	A_Fil_primary = 42.4*mili*mili;	    // "AWG1" cables: Sustain up to 115 [A] at 90° (Primary nominal current = 111 [A] --> Ok!)
-	A_Fil_Secondary = 456*mili*mili;    // "900MCM" cables : Sustain up to 2925 [A] at 90° (Secondary nominal current = 2777 [A] --> Ok!)	
+	N_Wire_per_Turn_Secondary = 7;	    // Here 1 turn of cable is made up of 7 wires in parallel
+	A_Fil_primary = 107*mili*mili;	    // "AWG0000" cables: Sustain up to 205 [A] at 90° (Primary nominal current = 192.3 [A] --> Ok!)
+	A_Fil_Secondary = 886.7*mili*mili;    // "1750MCM" cables : Sustain up to 5145 [A] at 90° (Secondary nominal current = 4809 [A] --> Ok!)	
 EndIf
 
 transfo_ratio   = Voltage_primary/Voltage_secondary;													//transformation ratio
