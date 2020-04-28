@@ -33,6 +33,7 @@ Thickness_Core    = (Voltage_primary)/((2*Pi)/(Sqrt[2]))/Freq/(0.8*B_sat)/Primar
 // center of the core. The value Concentration_Coef has been manually adjusted so that the maximum flux density reached at the rounded corner of the core is equal to 80% of B_sat.
 Thickness_Core  = Thickness_Core *(Concentration_Coef/(0.8*B_sat)); 
 
+
 /************************************ Beginning of the .Pro file ******************************************************/
 Group {
 
@@ -418,9 +419,9 @@ PostOperation {
 
       // Do you want to see the field card?
 	If (Field_Card==1)
-        Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+        //Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
         Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
-        Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+        // Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
     EndIf 
 	  
     If (Flag_FrequencyDomain)      

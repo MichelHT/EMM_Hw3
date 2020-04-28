@@ -109,9 +109,9 @@ If((Geo == 1))	// The computation of the width of a particular part of the core,
 	H_Centre = 0.5 * W_Ref;
 	W_Centre = W_Ref;
 ElseIf((Geo == 0))
-	H_Leg = (Sqrt[7]/2) * W_Ref;
-	W_Leg = (Sqrt[7]/2) * W_Ref;
-	W_Centre = 2 * W_Ref;
+	H_Leg = ((Sqrt[7]/2)) * W_Ref;
+	W_Leg = ((Sqrt[7]/2)) * W_Ref;
+	W_Centre = (2) * W_Ref;
 EndIf
 
 // Counter initilization
