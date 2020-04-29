@@ -64,12 +64,14 @@ R_Circle = R_ext;
 Num_Surf = Num_Surf +1;
 Call Create_Circle;
 
+
 // Internal domain circle. 
 X_Circle = 0;
 Y_Circle = 0;
 R_Circle = R_int;
 Num_Surf = Num_Surf +1;
 Call Create_Circle;
+
 
 // Possible Air gap in the core.
 If(Core_Air_Gap == 0)	
@@ -100,25 +102,43 @@ Else
 	
 	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Surface{Num_Surf-2}; Surface{Num_Surf-1}; Surface{Num_Surf}; Delete;};  // Creation of a E-shape core for the three phases.
 	
-	X_Rectangle = -(W_Centre + W_Hole + W_Centre*0.5);
-	W_Rectangle = (W_Centre + W_Hole + W_Centre*0.5)*2;
+	X_Rectangle = -(W_Leg + W_Hole + W_Centre*0.5) ;
+	W_Rectangle = (W_Leg + W_Hole + W_Centre*0.5)*2;
 	Y_Rectangle =  H_Hole*0.5 + Air_Gap3;
 	H_Rectangle = H_Leg;
 	Num_Surf = Num_Surf +1;
 	lc_Rectangle = lc_Core_Corner;
 	Call Create_Rectangle;																						 // Creation of a I-shape core which closes the magnetic circuit.
-	Surf_Core() += Num_Surf;							
+	Surf_Core() += {Num_Surf};							
 	
 	Translate {0, Air_Gap3*0.5, 0} { Surface{16}; Surface{17}; } 												 // Centering of the domain.
 EndIf
 
+cl = newl;
+// Skin of the air
+SA() += {cl - 4 - !Core_Air_Gap*(4)};
+SA() += {cl - 3 - !Core_Air_Gap*(4)};
+SA() += {cl - 2 - !Core_Air_Gap*(4)};
+SA() += {cl - 1 - !Core_Air_Gap*(4)};
+// Skin of air inf
+SAI() += {cl};
+SAI() += {cl+1};
+SAI() += {cl+2};
+SAI() += {cl+3};
+
+cp = newp;
+// Points of air inf
+PAI() += {cp};
+PAI() += {cp+1};
+PAI() += {cp+2};
+PAI() += {cp+3};
 jj()=BooleanDifference{ Surface{16}; Delete; }{ Surface{17}; };				  										 // AIR INF
-s() = BooleanDifference{ Surface{17}; Delete; }{ Surface{Surf_Core()}; Surface{Surf_Inductors()}; };		 	 // AIR
+s() = BooleanDifference{ Surface{17}; Delete; }{ Surface{Surf_Core()}; Surface{Surf_Inductors()}; };		 	 	// AIR
 
 If (Add_shield==1)
 	Delete{Surface{jj()} ;}
-	Delete{Line{112:115} ;}
-	Delete{Point{107:110};}
+	Delete{Line{SAI()} ;}
+	Delete{Point{PAI()};}
 EndIf
 
 

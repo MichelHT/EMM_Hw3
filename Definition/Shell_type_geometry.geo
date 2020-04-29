@@ -78,13 +78,16 @@ Y_Circle = 0;
 R_Circle = R_ext;
 Num_Surf = Num_Surf +1;
 lc_Circle = lc_Air;
+cl = newl;
 Call Create_Circle;
+
 
 // Internal domain circle. 
 X_Circle = 0;
 Y_Circle = 0;
 R_Circle = R_int;
 Num_Surf = Num_Surf +1;
+cl = newl;
 Call Create_Circle;
 
 // Possible Air gap in the core.
@@ -137,13 +140,33 @@ Else
 	Translate {0, -Air_Gap3*0.5, 0} { Surface{20}; Surface{21}; } 																		// Centering of the domain.
 EndIf
 
+cl = newl;
+// Skin of the air
+SA()  += {cl - 4 - !Core_Air_Gap*(4)};
+SA()  += {cl - 3 - !Core_Air_Gap*(4)};
+SA()  += {cl - 2 - !Core_Air_Gap*(4)};
+SA()  += {cl - 1 - !Core_Air_Gap*(4)};
+//Skin of air inf 
+SAI() += {cl};
+SAI() += {cl+1};
+SAI() += {cl+2};
+SAI() += {cl+3};
+
+cp = newp;
+// Points of the air
+PAI() += {cp};
+PAI() += {cp+1};
+PAI() += {cp+2};
+PAI() += {cp+3};
+
 jj()= BooleanDifference{ Surface{20}; Delete; }{ Surface{21}; };																				// AIR INF
+cl = newl;
 s() = BooleanDifference{ Surface{21}; Delete; }{ Surface{Surf_Core()}; Surface{Surf_Inductors()}; };									// AIR
 
 If (Add_shield==1)
 	Delete{Surface{jj()} ;}
-	Delete{Line{133:136} ;}
-	Delete{Point{139:142};}
+	Delete{Line{SAI()} ;}
+	Delete{Point{PAI()};}
 EndIf
 
 

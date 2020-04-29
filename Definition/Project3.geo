@@ -9,10 +9,10 @@ If (Geo == 1)
 	Include "Shell_type_geometry.geo";
 	//Physicals
 	If (Add_shield == 0)
-		Physical Line("Skin_InfiniteAir", Skin_airInf)= {109,110,111,112};	
-		Physical Surface("AIR_INF",AirInf)            = {jj()}           ;	
+		Physical Line("Skin_InfiniteAir", Skin_airInf)= {SAI()};	
+		Physical Surface("AIR_INF",AirInf)            = {jj()};	
 	Else
-		Physical Line("Skin_Air"  ,Skin_air)          = {125,126,127,128};
+		Physical Line("Skin_Air"  ,Skin_air)          = {SA()};
 	EndIf
 
 	Physical Surface("AIR"    ,Air_ext)                        = {s()}        ;	
@@ -48,10 +48,10 @@ Else
 	Include "Core_type_geometry.geo" ;
 	//Physicals
 	If (Add_shield == 0)
-		Physical Line("Skin_InfiniteAir", Skin_airInf)= {89,90,91,92}    ;
-		Physical Surface("AIR_INF", AirInf)           = {jj()}           ; 
+		Physical Line("Skin_InfiniteAir", Skin_airInf)= {SAI()};
+		Physical Surface("AIR_INF", AirInf)           = {jj()}; 
 	Else
-		Physical Line("Skin_Air"  ,Skin_air)          = {104,105,106,107};
+		Physical Line("Skin_Air"  ,Skin_air)          = {SA()};
 	EndIf
 
 	Physical Surface("AIR"    ,Air_ext)                        = {s()}        ; 
