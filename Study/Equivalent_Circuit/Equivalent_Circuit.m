@@ -71,8 +71,8 @@ for(i=1:3) % Loop over the phase
         VOC_Secondary{i,j}= fscanf(fid_VOC_Secondary,'%g %g',[1 3]);                % Voltage secondary open circuit case
         
         % Computatin of the Voltage applied on the windings
-        VSC_Primary{i,j} = VinSC_Primary{i,j} - VRinSC_Primary{i,j};
-        VOC_Primary{i,j} = VinOC_Primary{i,j} - VRinOC_Primary{i,j};
+        VSC_Primary{i,j} = VinSC_Primary{i,j} + VRinSC_Primary{i,j};
+        VOC_Primary{i,j} = VinOC_Primary{i,j} + VRinOC_Primary{i,j};
 
         % Computation of the active and reactive power consumption
         PSC{i,j} = (VSC_Primary{i,j}(2)*CurrentSC_Primary{i,j}(2))+(VSC_Primary{i,j}(3)*CurrentSC_Primary{i,j}(3));                 % Dot product (= |VSC|*|ISC|*cos(phi))
