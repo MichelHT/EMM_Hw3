@@ -98,6 +98,8 @@ K_Ind1       = DefineNumber[0.6    , Name StrCat[PathGeometricParameters ,"11Ind
 K_Ind2       = DefineNumber[0.6    , Name StrCat[PathGeometricParameters ,"12Inductor 2 height coefficient "          ], Highlight "Grey"];
 Air_Gap3     = DefineNumber[0.001  , Name StrCat[PathGeometricParameters ,"13Air gap in the core"                     ], Highlight "Grey", Visible Core_Air_Gap];
 r_corner	 = DefineNumber[0.025  , Name StrCat[PathGeometricParameters ,"16Radius of the rounded hole corner"       ], Highlight "Grey"];
+Domain_Coef_Int	 = DefineNumber[1.5  , Name StrCat[PathGeometricParameters ,"17(Internal circle radius) over (Largest core dimension)"       ], Highlight "Grey"];
+Domain_Coef_Ext	 = DefineNumber[1.7  , Name StrCat[PathGeometricParameters ,"18(External circle radius) over (Largest core dimension)"       ], Highlight "Grey"];
 
 // Useful computation
 H_Inductor1 = K_Ind1 * H_Hole;
@@ -144,11 +146,11 @@ EndIf
 
 // Infinite shell transformation parameters
 If (Geo == 1)	
-	R_int  = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*1.5;		 
-	R_ext = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*1.7;
+	R_int  = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*Domain_Coef_Int;		 
+	R_ext = Sqrt[((W_Leg + W_Hole) + (W_Centre/2))^2+((H_Leg + H_Hole*1.5 + H_Centre + (Air_Gap3*Core_Air_Gap)*1.5))^2]*Domain_Coef_Ext;
 Else
-	R_int  = Sqrt[((W_Leg + W_Centre*0.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 +(Air_Gap3*Core_Air_Gap)*0.5))^2]*1.5;								 
-	R_ext = Sqrt[((W_Leg + W_Centre*0.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 + (Air_Gap3*Core_Air_Gap)*0.5))^2]*1.7;
+	R_int  = Sqrt[((W_Leg + W_Centre*0.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 +(Air_Gap3*Core_Air_Gap)*0.5))^2]*Domain_Coef_Int;								 
+	R_ext = Sqrt[((W_Leg + W_Centre*0.5 + W_Hole))^2+((H_Leg + H_Hole*0.5 + (Air_Gap3*Core_Air_Gap)*0.5))^2]*Domain_Coef_Ext;
 EndIf
 
 /************************************ Mesh parameters ******************************************************/
