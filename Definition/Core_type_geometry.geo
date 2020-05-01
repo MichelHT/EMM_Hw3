@@ -77,14 +77,19 @@ Call Create_Circle;
 If(Core_Air_Gap == 0)	
 	Surf_Core() = BooleanDifference{ Surface{1}; Delete; }{ Surface{Surf_Holes()}; Delete;}; // CORE
 Else
-	X_Rectangle = -(W_Centre + W_Hole + W_Centre*0.5);
-	W_Rectangle = (W_Centre + W_Hole + W_Centre*0.5)*2;
+	X_Rectangle = -(W_Leg + W_Hole + W_Centre*0.5);
+	W_Rectangle = (W_Leg + W_Hole + W_Centre*0.5)*2;
 	Y_Rectangle =  H_Hole*0.5;
 	H_Rectangle = H_Leg;
 	Num_Surf = Num_Surf +1;
 	lc_Rectangle = lc_Core_Corner;
 	Call Create_Rectangle;
 
+	cp = newp ;
+	Point(cp)       = {X_Rectangle, Y_Rectangle, 0, lc_Core_Corner};
+	cp = newp ;
+	Point(cp)       = {X_Rectangle + W_Rectangle, Y_Rectangle, 0, lc_Core_Corner};
+	
 	X_Rectangle = -(W_Hole + W_Centre*0.5);		// Remove the rounded corners
 	W_Rectangle = W_Hole;
 	Y_Rectangle =  H_Hole*0.5 - r_corner;
