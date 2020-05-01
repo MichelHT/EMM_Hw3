@@ -19,7 +19,7 @@ DefineConstant[
     } }];
 Load_exponent  = DefineNumber[-3    , Name StrCat[PathElectricalParameters, "02Order of magnitude of the load expressed in Ohm"      ], Highlight "Red" , Visible test==2];
 Phase 		   = DefineNumber[0     , Name StrCat[PathElectricalParameters, "03Phase of the load connected to the secondary (in deg)"], Highlight "Red" , Visible test==2];
-muir_Core      = DefineNumber[20000 , Name StrCat[PathMaterialsParameters , "10Relative permeability of the core"                    ], Highlight "Yellow"]; //static permeability between 20000 and 50000
+muir_Core      = DefineNumber[2000 , Name StrCat[PathMaterialsParameters , "10Relative permeability of the core"                    ], Highlight "Yellow"]; //static permeability between 20000 and 50000
 B_sat          = DefineNumber[2   , Name StrCat[PathElectricalParameters, "11Saturation magnetic flux density [T]"                 ], Highlight "Red"   ]; //varies with the magnetic material only defined for ferrites magnetic material
 Concentration_Coef          = DefineNumber[3.25   , Name StrCat[PathElectricalParameters, "12Correction of the concentration of flux at the rounded corner of the core"], Highlight "Red"   ];
 Snoek_constant = DefineNumber[4*giga, Name StrCat[PathMaterialsParameters , "13Snoek constant"                                       ], Highlight "Yellow"]; // [4,12]gigaHz
