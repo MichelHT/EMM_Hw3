@@ -381,43 +381,43 @@ PostOperation {
 	Printf("H_Inductor2: %f [m]",H_Inductor2);
 	Printf("");
 
-    If (OverWriteOutput==1)
-       If (test==0) //short circuit test
-          DeleteFile["../Results/TransformerModel/UShortCircuit.txt"];
-          DeleteFile["../Results/TransformerModel/IShortCircuit.txt"];
-        ElseIf (test==1) //open ciruit test
-          DeleteFile["../Results/TransformerModel/UOpenCircuit.txt" ];
-          DeleteFile["../Results/TransformerModel/IOpenCircuit.txt" ];
-        ElseIf (test==2) //load defined by user
-          If (Phase != 90 && Phase != -90)
-            DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph1.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph2.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph2.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph3.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph3.txt"];
-          EndIf
-          If (Phase > 0)
-            DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph1.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph2.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph3.txt"];
-            If(Phase == 90)
-              DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph1.txt"];
-              DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph2.txt"];
-              DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph3.txt"];
-            EndIf
-          ElseIf(Phase < 0)
-            DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph1.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph2.txt"];
-            DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph3.txt"];
-             If (Phase == -90)
-              DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph1.txt"];
-              DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph2.txt"];
-              DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph3.txt"];
-            EndIf
-          EndIf
-        EndIf
-        DeleteFile["../Results/Frequency.txt"];
+    	If (OverWriteOutput==1)
+       		If (test==0) //short circuit test
+          		DeleteFile["../Results/TransformerModel/UShortCircuit.txt"];
+          		DeleteFile["../Results/TransformerModel/IShortCircuit.txt"];
+        	ElseIf (test==1) //open ciruit test
+          		DeleteFile["../Results/TransformerModel/UOpenCircuit.txt" ];
+          		DeleteFile["../Results/TransformerModel/IOpenCircuit.txt" ];
+        	ElseIf (test==2) //load defined by user
+          		If (Phase != 90 && Phase != -90)
+            			DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph1.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph1.txt"];
+           			DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph2.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph2.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/U2_Rout_ph3.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/I2_Rout_ph3.txt"];
+          		EndIf
+          		If (Phase > 0)
+            			DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph1.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph2.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/U2_Lout_ph3.txt"];
+            			If(Phase == 90)
+             				DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph1.txt"];
+              				DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph2.txt"];
+              				DeleteFile["../Results/ExteriorCharacteristic/I2_Lout_ph3.txt"];
+            			EndIf
+          		ElseIf(Phase < 0)
+            			DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph1.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph2.txt"];
+            			DeleteFile["../Results/ExteriorCharacteristic/I2_Cout_ph3.txt"];
+             			If (Phase == -90)
+              				DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph1.txt"];
+              				DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph2.txt"];
+              				DeleteFile["../Results/ExteriorCharacteristic/U2_Cout_ph3.txt"];
+            			EndIf
+          		EndIf
+        	EndIf
+        	DeleteFile["../Results/Frequency.txt"];
       EndIf
 	
     //File containing all the studied frequencies:
@@ -425,10 +425,10 @@ PostOperation {
 
       // Do you want to see the field card?
 	If (Field_Card==1)
-        //Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
-        Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
-         // Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
-    EndIf 
+        	Print[ j , OnElementsOf Region[{Vol_C_Mag, Vol_S_Mag}], Format Gmsh, File "../Results/j.pos" ];
+        	Print[ b , OnElementsOf Vol_Mag, Format Gmsh, File "../Results/b.pos"  ];
+        	Print[ az, OnElementsOf Vol_Mag, Format Gmsh, File "../Results/az.pos" ];
+    	EndIf 
 	  
     If (Flag_FrequencyDomain)      
 
