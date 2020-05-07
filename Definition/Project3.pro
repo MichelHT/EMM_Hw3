@@ -1,4 +1,4 @@
-// Commin data
+// Common data
 Include "data.geo";
 
 /*********************** Definition of further parameter (whose modification do no require a new mesh generation)  *******************************************/
