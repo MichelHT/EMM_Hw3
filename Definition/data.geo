@@ -129,7 +129,7 @@ Else
 	N_Wire_per_Turn_Primary = 1;	    // Not useful here 1 turn is made up of 1 wire 
 	N_Wire_per_Turn_Secondary = 7;	    // Here 1 turn of cable is made up of 7 wires in parallel
 	A_Fil_primary = 107*mili*mili;	    // "AWG0000" cables: Sustain up to 205 [A] at 90° (Primary nominal current = 192.3 [A] --> Ok!)
-	A_Fil_Secondary = 886.7*mili*mili;    // "1750MCM" cables : Sustain up to 5145 [A] at 90° (Secondary nominal current = 4809 [A] --> Ok!)	
+	A_Fil_Secondary = 886.7*mili*mili;    // 7 "1750MCM" cables : Sustain up to 5145 [A] at 90° (Secondary nominal current = 4809 [A] --> Ok!)	
 EndIf
 
 transfo_ratio   = Voltage_primary/Voltage_secondary;													//transformation ratio
