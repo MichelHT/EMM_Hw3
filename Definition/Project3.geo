@@ -5,7 +5,7 @@ Include "data.geo"     ;
 Include "functions.geo";
 
 
-If (Geo == 1)
+If (Geo == 1) //Shell Type
 	Include "Shell_type_geometry.geo";
 	//Physicals
 	If (Add_shield == 0)
@@ -16,7 +16,7 @@ If (Geo == 1)
 	EndIf
 
 	Physical Surface("AIR"    ,Air_ext)                        = {s()}        ;	
-    Physical Surface("CORE"   ,Core)                           = {Surf_Core()};	
+    	Physical Surface("CORE"   ,Core)                           = {Surf_Core()};	
 	Physical Surface("Primary_Phase1_Plus"   ,Primary_ph1_p)   = {14}         ;		
 	Physical Surface("Primary_Phase3_Plus"   ,Primary_ph3_p)   = {16}         ;	
 	Physical Surface("Primary_Phase1_Minus"  ,Primary_ph1_m)   = {17}         ;		
@@ -44,7 +44,7 @@ If (Geo == 1)
 	Color Grey50{Surface{s()}         ;}
 	Color Green {Surface{Surf_Core()};}
 	Color Blue  {Surface{20}          ;}
-Else 
+Else //Core Type 
 	Include "Core_type_geometry.geo" ;
 	//Physicals
 	If (Add_shield == 0)
