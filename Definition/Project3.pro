@@ -33,7 +33,7 @@ Coils_Conductivity = 10^Coils_Conductivity_Exponent;
 Thickness_Core    = (Voltage_primary)/((2*Pi)/(Sqrt[2]))/Freq/(0.8*B_sat)/Primary_Turns/W_Ref;
 
 // The thickeness of the core is further updated because the magnetic flux density at the rounded corner of the core is higher than at the 
-// center of the core. The value Concentration_Coef has been manually adjusted so that the maximum flux density reached at the rounded corner of the core is equal to 80% of B_sat.
+// center of the core. The value Concentration_Coef should be manually adjusted so that the maximum flux density reached at the rounded corner of the core is equal to 80% of B_sat.
 Thickness_Core  = Thickness_Core *(Concentration_Coef/(0.8*B_sat)); 
 
 
